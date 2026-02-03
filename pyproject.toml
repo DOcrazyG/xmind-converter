@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "xmind-converter"
+version = "0.1.0"
+description = "XMind文件与CSV(三元组)、Markdown、HTML、JSON等文件格式的相互转换"
+authors = [
+  { name = "Your Name", email = "your.email@example.com" }
+]
+license = { file = "LICENSE" }
+readme = "README.md"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+requires-python = ">=3.7"
+dependencies = [
+  "black>=23.3.0",
+  "click>=8.0.0",
+  "flake8>=5.0.4",
+  "pytest>=7.4.4",
+]
+
+[project.urls]
+homepage = "https://github.com/yourusername/xmind-converter"
+
+[project.scripts]
+xmind-converter = "xmind_converter.cli:cli"
+
+[project.optional-dependencies]
+test = [
+  "pytest>=6.0.0",
+]
+dev = [
+  "pytest>=6.0.0",
+  "black>=21.0.0",
+  "flake8>=4.0.0",
+]
