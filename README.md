@@ -10,7 +10,78 @@ XMind Converter is a Python library for converting XMind files to and from CSV (
 - Provides command line tool
 - Supports Python 3.7+
 
+## Supported File Formats
+
+### CSV Format
+CSV files must follow a specific structure with a header row and parent-child relationships:
+
+```csv
+parent,child,relationship
+Root,Child1,contains
+Child1,Grandchild1,contains
+Root,Child2,contains
+```
+
+### Markdown Format
+Markdown files use heading levels (#, ##, ###, etc.) to represent hierarchy:
+
+```markdown
+# Root
+## Child1
+### Grandchild1
+## Child2
+```
+
+### HTML Format
+HTML files use heading tags (h1, h2, h3, etc.) to represent hierarchy:
+
+```html
+<h1>Root</h1>
+<h2>Child1</h2>
+<h3>Grandchild1</h3>
+<h2>Child2</h2>
+```
+
+### JSON Format
+JSON files must contain a specific structure with name and root_node fields:
+
+```json
+{
+  "name": "MindMap Name",
+  "root_node": {
+    "title": "Root",
+    "id": "root-id",
+    "children": [
+      {
+        "title": "Child1",
+        "id": "child1-id",
+        "children": [
+          {
+            "title": "Grandchild1",
+            "id": "grandchild1-id",
+            "children": []
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**Note**: Only files following these specific formats can be successfully parsed and converted.
+
 ## Installation
+
+### Using uv (Recommended)
+
+```bash
+# Install uv if you haven't already
+# https://docs.astral.sh/uv/getting-started/installation/
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install xmind-converter
+uv add xmind-converter
+```
 
 ### Using pip
 
@@ -22,13 +93,13 @@ pip install xmind-converter
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/xmind-converter.git
+git clone https://github.com/DOcrazyG/xmind-converter.git
 cd xmind-converter
 
-# Install dependencies
-pip install -r requirements.txt
+# Install using uv (recommended)
+uv add .
 
-# Install package
+# Or using pip
 pip install -e .
 ```
 
@@ -138,14 +209,46 @@ docs/                    # Documentation
 - Python 3.7+
 - click >= 8.0.0
 
+### Development Dependencies
+
+- pytest >= 6.0.0 (testing)
+- black >= 21.0.0 (code formatting)
+- flake8 >= 4.0.0 (linting)
+
 ## Testing
 
 ```bash
-# Run tests
-pytest tests/
+# Run tests using uv (recommended)
+uv run pytest tests/
 
 # Run tests with coverage
+uv run pytest tests/ --cov=xmind_converter
+
+# Or using pip
+pytest tests/
 pytest tests/ --cov=xmind_converter
+```
+
+## Development
+
+```bash
+# Install development dependencies using uv
+uv add --dev .
+
+# Or using pip
+pip install -e ".[dev]"
+
+# Format code with black
+uv run black xmind_converter/ tests/
+
+# Or using pip
+black xmind_converter/ tests/
+
+# Lint code with flake8
+uv run flake8 xmind_converter/ tests/
+
+# Or using pip
+flake8 xmind_converter/ tests/
 ```
 
 ## Contributing

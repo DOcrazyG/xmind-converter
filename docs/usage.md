@@ -2,7 +2,155 @@
 
 This guide provides detailed instructions on how to use the XMind Converter library for file format conversions.
 
+## Supported File Formats
+
+**Important**: This library only supports files following specific formats. Files not conforming to these formats will fail to parse.
+
+### CSV Format
+
+CSV files must follow a specific structure:
+- **Header row**: Required, with columns `parent,child,relationship`
+- **Data rows**: Each row defines a parent-child relationship
+- **Delimiter**: Default is comma (`,`), but can be customized
+
+**Example CSV file**:
+```csv
+parent,child,relationship
+Root,Child1,contains
+Child1,Grandchild1,contains
+Child1,Grandchild2,contains
+Root,Child2,contains
+Child2,Grandchild3,contains
+```
+
+**Requirements**:
+- Must have a header row
+- Each row must have at least 2 columns (parent, child)
+- The third column (relationship) is ignored during parsing
+- The first parent node in the file becomes the root node
+
+### Markdown Format
+
+Markdown files use heading levels to represent hierarchy:
+- **# (H1)**: Root level
+- **## (H2)**: First level children
+- **### (H3)**: Second level children
+- And so on...
+
+**Example Markdown file**:
+```markdown
+# Root
+## Child1
+### Grandchild1
+### Grandchild2
+## Child2
+### Grandchild3
+```
+
+**Requirements**:
+- Must use heading syntax (#, ##, ###, etc.)
+- Empty lines are ignored
+- Heading level determines the node depth in the tree
+- The first H1 heading becomes the root node
+
+### HTML Format
+
+HTML files use heading tags (h1, h2, h3, etc.) to represent hierarchy:
+- **h1**: Root level
+- **h2**: First level children
+- **h3**: Second level children
+- And so on...
+
+**Example HTML file**:
+```html
+<h1>Root</h1>
+<h2>Child1</h2>
+<h3>Grandchild1</h3>
+<h3>Grandchild2</h3>
+<h2>Child2</h2>
+<h3>Grandchild3</h3>
+```
+
+**Requirements**:
+- Must use heading tags (h1, h2, h3, etc.)
+- Heading level determines the node depth in the tree
+- The h1 content becomes the mind map name and root node title
+- Only heading tags are parsed; other HTML content is ignored
+
+### JSON Format
+
+JSON files must contain a specific structure with `name` and `root_node` fields:
+
+**Example JSON file**:
+```json
+{
+  "name": "My MindMap",
+  "root_node": {
+    "title": "Root",
+    "id": "root-id",
+    "children": [
+      {
+        "title": "Child1",
+        "id": "child1-id",
+        "children": [
+          {
+            "title": "Grandchild1",
+            "id": "grandchild1-id",
+            "children": []
+          },
+          {
+            "title": "Grandchild2",
+            "id": "grandchild2-id",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "Child2",
+        "id": "child2-id",
+        "children": [
+          {
+            "title": "Grandchild3",
+            "id": "grandchild3-id",
+            "children": []
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**Requirements**:
+- Must have a `name` field (string) for the mind map name
+- Must have a `root_node` field (object) representing the root node
+- Each node must have:
+  - `title` (string): Node title
+  - `id` (string, optional): Node ID, auto-generated if not provided
+  - `children` (array): Array of child node objects
+- `children` array can be empty for leaf nodes
+
+**Legacy format support**: The parser also supports a simplified format where the root object itself is the root node:
+```json
+{
+  "title": "Root",
+  "id": "root-id",
+  "children": [...]
+}
+```
+
 ## 1. Installation
+
+### Using uv (Recommended)
+
+```bash
+# Using uv (recommended)
+# https://docs.astral.sh/uv/getting-started/installation/
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install xmind-converter
+uv add xmind-converter
+```
 
 ### Using pip
 
@@ -14,13 +162,13 @@ pip install xmind-converter
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/xmind-converter.git
+git clone https://github.com/DOcrazyG/xmind-converter.git
 cd xmind-converter
 
-# Install dependencies
-pip install -r requirements.txt
+# Install using uv (recommended)
+uv add .
 
-# Install package
+# Or using pip
 pip install -e .
 ```
 
@@ -265,8 +413,27 @@ print(mindmap.name)
 root = mindmap.root_node
 print(root.title)
 
+# Get mind map depth (method)
+depth = mindmap.get_depth()
+print(f"Mind map depth: {depth}")
+
+# Get mind map depth (property)
+depth = mindmap.depth
+print(f"Mind map depth: {depth}")
+
 # Print tree structure
 mindmap.print_tree()
+
+# Traverse mind map
+def print_node(node, depth):
+    print(f"{'  ' * depth}{node.title}")
+
+mindmap.traverse(print_node)
+
+# Add root node
+from xmind_converter.models import MindNode
+new_root = MindNode("New Root")
+mindmap.add_root_node(new_root)
 ```
 
 #### Working with MindNode objects
@@ -281,8 +448,12 @@ mindmap = converter.load_from('example.xmind')
 # Access root node
 root = mindmap.root_node
 
-# Get node depth
+# Get node depth (method)
 depth = root.get_depth()
+print(f"Root node depth: {depth}")
+
+# Get node depth (property)
+depth = root.depth
 print(f"Root node depth: {depth}")
 
 # Access children
@@ -294,6 +465,19 @@ for child in root.children:
 from xmind_converter.models import MindNode
 new_child = MindNode("New Node")
 root.add_child(new_child)
+
+# Remove child
+if root.children:
+    root.remove_child(root.children[0])
+
+# Traverse node tree
+def print_node(node, depth):
+    print(f"{'  ' * depth}{node.title}")
+
+root.traverse(print_node)
+
+# Print node tree structure
+root.print_tree()
 ```
 
 ### 4.2 Error Handling
@@ -302,14 +486,20 @@ Handle errors gracefully using try-except blocks:
 
 ```python
 from xmind_converter import CoreConverter
-from xmind_converter.exceptions import XMindConverterError
+from xmind_converter.exceptions import XMindConverterError, ParserError, ConverterError, FileFormatError
 
 try:
     converter = CoreConverter()
     mindmap = converter.load_from('example.xmind')
     converter.convert_to(mindmap, 'csv', 'output.csv')
+except ParserError as e:
+    print(f"Parsing error: {str(e)}")
+except ConverterError as e:
+    print(f"Conversion error: {str(e)}")
+except FileFormatError as e:
+    print(f"File format error: {str(e)}")
 except XMindConverterError as e:
-    print(f"Error: {str(e)}")
+    print(f"General error: {str(e)}")
 except Exception as e:
     print(f"Unexpected error: {str(e)}")
 ```
@@ -391,6 +581,8 @@ Root,Child2,contains
 
 This structure represents the hierarchical relationships in the mind map.
 
+**Note**: When parsing CSV files, the third column (relationship) is ignored. Only the parent-child relationships are used to build the tree structure.
+
 ### 5.6 Markdown Format Structure
 
 The Markdown format uses heading levels to represent hierarchy:
@@ -404,9 +596,11 @@ The Markdown format uses heading levels to represent hierarchy:
 
 Each heading level represents a depth level in the mind map.
 
+**Note**: When parsing Markdown files, only lines starting with # are processed. Empty lines and other content are ignored.
+
 ### 5.7 HTML Format Structure
 
-The HTML format generates a nested list structure:
+**Output Format**: When converting to HTML, the library generates a nested list structure:
 
 ```html
 <ul>
@@ -422,6 +616,8 @@ The HTML format generates a nested list structure:
   </li>
 </ul>
 ```
+
+**Input Format**: When parsing HTML files, only heading tags (h1, h2, h3, etc.) are processed. The heading level determines the node depth. Other HTML content is ignored.
 
 ### 5.8 JSON Format Structure
 
@@ -449,6 +645,10 @@ The JSON format preserves the complete tree structure:
   }
 }
 ```
+
+**Note**: When parsing JSON files, the library supports two formats:
+1. Standard format with `name` and `root_node` fields
+2. Legacy format where the root object itself is the root node (must have `title` and `children` fields)
 
 ## 6. Best Practices
 

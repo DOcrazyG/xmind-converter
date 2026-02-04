@@ -30,7 +30,8 @@ Load from specified format and convert to MindMap.
 **Return Value**: `MindMap` object representing the parsed content
 
 **Exceptions**:
-- `XMindConverterError`: Raised when loading fails or format is unsupported
+- `ParserError`: Raised when loading fails or format is unsupported
+- `FileFormatError`: Raised when file format is not supported
 
 **Example**:
 ```python
@@ -52,7 +53,8 @@ Convert MindMap to specified format and save to file.
 **Return Value**: str - Success message
 
 **Exceptions**:
-- `XMindConverterError`: Raised when conversion fails or format is unsupported
+- `ConverterError`: Raised when conversion fails or format is unsupported
+- `FileFormatError`: Raised when file format is not supported
 
 **Example**:
 ```python
@@ -75,7 +77,9 @@ Convert from one format to another.
 **Return Value**: str - Success message
 
 **Exceptions**:
-- `XMindConverterError`: Raised when conversion fails or format is unsupported
+- `ParserError`: Raised when loading fails or format is unsupported
+- `ConverterError`: Raised when conversion fails or format is unsupported
+- `FileFormatError`: Raised when file format is not supported
 
 **Example**:
 ```python
@@ -98,7 +102,7 @@ result = converter.convert('input.md', 'output.html')
 Initialize MindMap instance.
 
 **Parameters**:
-- `name` (str): Mind map name
+- `name` (str, optional): Mind map name, defaults to "Untitled"
 - `root_node` (MindNode, optional): Root node of the mind map
 
 **Return Value**: MindMap instance
@@ -119,9 +123,41 @@ Get detailed string representation of the mind map.
 
 **Return Value**: str - Detailed string representation
 
+#### `get_depth()`
+
+Get mind map depth (maximum depth of the entire tree).
+
+**Parameters**: None
+
+**Return Value**: int - Mind map depth
+
+#### `depth`
+
+Property to get mind map depth (maximum depth of the entire tree).
+
+**Return Value**: int - Mind map depth
+
+#### `traverse(callback)`
+
+Traverse mind map and execute callback for each node.
+
+**Parameters**:
+- `callback` (function): Callback function that receives (node, depth) as parameters
+
+**Return Value**: None
+
+#### `add_root_node(node)`
+
+Add root node to mind map.
+
+**Parameters**:
+- `node` (MindNode): Root node object
+
+**Return Value**: None
+
 #### `print_tree()`
 
-Print the mind map tree structure.
+Print mind map tree structure to console.
 
 **Parameters**: None
 
@@ -133,15 +169,15 @@ Print the mind map tree structure.
 
 **Methods**:
 
-#### `__init__(title, node_id=None, children=None, parent=None)`
+#### `__init__(title, node_id=None, parent=None, children=None)`
 
 Initialize node instance.
 
 **Parameters**:
 - `title` (str): Node title
-- `node_id` (str, optional): Node ID
-- `children` (list, optional): Child node list
+- `node_id` (str, optional): Node ID, auto-generated if not provided
 - `parent` (MindNode, optional): Parent node
+- `children` (list, optional): Child node list
 
 **Return Value**: MindNode instance
 
@@ -154,6 +190,15 @@ Add child node.
 
 **Return Value**: None
 
+#### `remove_child(child)`
+
+Remove child node.
+
+**Parameters**:
+- `child` (MindNode): Child node object to remove
+
+**Return Value**: None
+
 #### `get_depth()`
 
 Get node depth.
@@ -161,6 +206,22 @@ Get node depth.
 **Parameters**: None
 
 **Return Value**: int - Node depth
+
+#### `depth`
+
+Property to get node depth.
+
+**Return Value**: int - Node depth
+
+#### `traverse(callback, depth=None)`
+
+Traverse node tree and execute callback for each node.
+
+**Parameters**:
+- `callback` (function): Callback function that receives (node, depth) as parameters
+- `depth` (int, optional): Starting depth level
+
+**Return Value**: None
 
 #### `__str__()`
 
@@ -177,6 +238,16 @@ Get detailed string representation of the node.
 **Parameters**: None
 
 **Return Value**: str - Detailed string representation
+
+#### `print_tree(indent=0, prefix="")`
+
+Print node tree structure to console.
+
+**Parameters**:
+- `indent` (int, optional): Indentation level
+- `prefix` (str, optional): Prefix string for display
+
+**Return Value**: None
 
 ## Converter Classes
 
@@ -268,7 +339,7 @@ Convert MindMap to JSON format and save to file.
 
 **Return Value**: None
 
-### XMindFileConverter
+### XMindConverter
 
 **Description**: XMind file format converter.
 
@@ -310,6 +381,15 @@ Parse file and return MindMap (abstract method).
 
 **Description**: XMind file parser.
 
+**Supported Format**: XMind files (.xmind) are ZIP archives containing either `content.json` (XMind 2024+ format) or `content.xml` (older XMind formats). The parser automatically detects and handles both formats.
+
+**Format Requirements**:
+- File must be a valid ZIP archive
+- Must contain either `content.json` or `content.xml`
+- `content.json` format: Array of sheet objects or object with "sheets" key
+- `content.xml` format: XML with proper namespace `urn:xmind:xmap:xmlns:content:2.0`
+- Must contain at least one sheet with a root topic
+
 **Methods**:
 
 #### `parse(input_path, **kwargs)`
@@ -323,11 +403,22 @@ Parse XMind file.
 **Return Value**: MindMap object representing the parsed content
 
 **Exceptions**:
-- `XMindConverterError`: Raised when parsing fails
+- `ParserError`: Raised when parsing fails
+- `FileNotFoundError`: Raised when file is not found
+- `FileFormatError`: Raised when file is not a valid XMind file
 
 ### CSVParser
 
 **Description**: CSV file parser.
+
+**Supported Format**: CSV files must have a header row with columns `parent,child,relationship`. Each data row defines a parent-child relationship. The third column (relationship) is ignored during parsing.
+
+**Example CSV format**:
+```csv
+parent,child,relationship
+Root,Child1,contains
+Child1,Grandchild1,contains
+```
 
 **Methods**:
 
@@ -337,16 +428,28 @@ Parse CSV file.
 
 **Parameters**:
 - `input_path` (str): CSV file path
-- `**kwargs`: Additional parameters (not currently used)
+- `delimiter` (str, optional): CSV delimiter character (default: ",")
+- `**kwargs`: Additional parameters
 
 **Return Value**: MindMap object representing the parsed content
 
 **Exceptions**:
-- `XMindConverterError`: Raised when parsing fails
+- `ParserError`: Raised when parsing fails
+- `FileNotFoundError`: Raised when file is not found
 
 ### MarkdownParser
 
 **Description**: Markdown file parser.
+
+**Supported Format**: Markdown files must use heading syntax (#, ##, ###, etc.) to represent hierarchy. Heading level determines node depth. Empty lines and other content are ignored.
+
+**Example Markdown format**:
+```markdown
+# Root
+## Child1
+### Grandchild1
+## Child2
+```
 
 **Methods**:
 
@@ -361,11 +464,22 @@ Parse Markdown file.
 **Return Value**: MindMap object representing the parsed content
 
 **Exceptions**:
-- `XMindConverterError`: Raised when parsing fails
+- `ParserError`: Raised when parsing fails
+- `FileNotFoundError`: Raised when file is not found
 
 ### HTMLParser
 
 **Description**: HTML file parser.
+
+**Supported Format**: HTML files must use heading tags (h1, h2, h3, etc.) to represent hierarchy. Heading level determines node depth. The h1 content becomes the mind map name and root node title. Only heading tags are parsed; other HTML content is ignored.
+
+**Example HTML format**:
+```html
+<h1>Root</h1>
+<h2>Child1</h2>
+<h3>Grandchild1</h3>
+<h2>Child2</h2>
+```
 
 **Methods**:
 
@@ -380,11 +494,55 @@ Parse HTML file.
 **Return Value**: MindMap object representing the parsed content
 
 **Exceptions**:
-- `XMindConverterError`: Raised when parsing fails
+- `ParserError`: Raised when parsing fails
+- `FileNotFoundError`: Raised when file is not found
 
 ### JSONParser
 
 **Description**: JSON file parser.
+
+**Supported Format**: JSON files must contain a specific structure. Two formats are supported:
+
+**Standard format** (recommended):
+```json
+{
+  "name": "MindMap Name",
+  "root_node": {
+    "title": "Root",
+    "id": "root-id",
+    "children": [
+      {
+        "title": "Child1",
+        "id": "child1-id",
+        "children": []
+      }
+    ]
+  }
+}
+```
+
+**Legacy format** (for compatibility):
+```json
+{
+  "title": "Root",
+  "id": "root-id",
+  "children": [
+    {
+      "title": "Child1",
+      "id": "child1-id",
+      "children": []
+    }
+  ]
+}
+```
+
+**Requirements**:
+- Standard format: Must have `name` (string) and `root_node` (object) fields
+- Legacy format: Root object must have `title` and `children` fields
+- Each node must have:
+  - `title` (string): Node title
+  - `id` (string, optional): Node ID, auto-generated if not provided
+  - `children` (array): Array of child node objects
 
 **Methods**:
 
@@ -399,13 +557,30 @@ Parse JSON file.
 **Return Value**: MindMap object representing the parsed content
 
 **Exceptions**:
-- `XMindConverterError`: Raised when parsing fails
+- `ParserError`: Raised when parsing fails
+- `FileNotFoundError`: Raised when file is not found
 
 ## Exception Classes
 
 ### XMindConverterError
 
 **Description**: Base exception for XMind converter errors.
+
+### ParserError
+
+**Description**: Exception raised when parsing fails.
+
+### ConverterError
+
+**Description**: Exception raised when conversion fails.
+
+### FileFormatError
+
+**Description**: Exception raised when file format is not supported.
+
+### FileNotFoundError
+
+**Description**: Exception raised when file is not found.
 
 ## Command Line Interface
 

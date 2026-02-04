@@ -10,11 +10,77 @@ XMind Converter is a Python library for converting XMind files to and from CSV (
 - Provides command line tool
 - Supports Python 3.7+
 
+## Supported File Formats
+
+### CSV Format
+CSV files must follow a specific structure with a header row and parent-child relationships:
+
+```csv
+parent,child,relationship
+Root,Child1,contains
+Child1,Grandchild1,contains
+Root,Child2,contains
+```
+
+### Markdown Format
+Markdown files use heading levels (#, ##, ###, etc.) to represent hierarchy:
+
+```markdown
+# Root
+## Child1
+### Grandchild1
+## Child2
+```
+
+### HTML Format
+HTML files use heading tags (h1, h2, h3, etc.) to represent hierarchy:
+
+```html
+<h1>Root</h1>
+<h2>Child1</h2>
+<h3>Grandchild1</h3>
+<h2>Child2</h2>
+```
+
+### JSON Format
+JSON files must contain a specific structure with name and root_node fields:
+
+```json
+{
+  "name": "MindMap Name",
+  "root_node": {
+    "title": "Root",
+    "id": "root-id",
+    "children": [
+      {
+        "title": "Child1",
+        "id": "child1-id",
+        "children": [
+          {
+            "title": "Grandchild1",
+            "id": "grandchild1-id",
+            "children": []
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**Note**: Only files following these specific formats can be successfully parsed and converted.
+
 ## Quick Start
 
 ### Installation
 
 ```bash
+# Using uv (recommended)
+# https://docs.astral.sh/uv/getting-started/installation/
+curl -LsSf https://astral.sh/uv/install.sh | sh
+uv add xmind-converter
+
+# Or using pip
 pip install xmind-converter
 ```
 
