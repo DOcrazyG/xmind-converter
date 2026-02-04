@@ -8,25 +8,12 @@ class BaseConverter(ABC):
     """Base converter abstract class"""
 
     @abstractmethod
-    def convert_to(self, mindmap: MindMap) -> str:
-        """Convert MindMap to string format
+    def convert_to(self, mindmap: MindMap, output_path: str, **kwargs) -> None:
+        """Convert MindMap to file
 
         Args:
             mindmap: MindMap object to convert
-
-        Returns:
-            String representation of the mindmap in the specific format
-        """
-        pass
-
-    @abstractmethod
-    def convert_from(self, input_path: str) -> MindMap:
-        """Convert from file format to MindMap
-
-        Args:
-            input_path: Path to the input file
-
-        Returns:
-            MindMap object created from the file
+            output_path: Path to save the output file
+            **kwargs: Additional format-specific parameters
         """
         pass

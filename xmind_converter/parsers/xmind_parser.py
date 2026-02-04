@@ -7,9 +7,10 @@ import os
 from typing import Dict, List, Optional, Any
 from ..models import MindMap, MindNode
 from ..exceptions import XMindParserError
+from .base_parser import BaseParser
 
 
-class XMindParser:
+class XMindParser(BaseParser):
     """XMind file parser"""
 
     def parse(self, file_path: str) -> MindMap:

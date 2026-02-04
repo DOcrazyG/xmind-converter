@@ -1,7 +1,7 @@
 """核心功能测试"""
 
 import pytest
-from xmind_converter.core import MindMap, MindNode, XMindConverter
+from xmind_converter.core import MindMap, MindNode, CoreConverter
 from xmind_converter.exceptions import XMindConverterError
 
 
@@ -69,7 +69,7 @@ def test_mind_map_depth():
 
 def test_converter_initialization():
     """测试转换器初始化"""
-    converter = XMindConverter()
+    converter = CoreConverter()
     assert converter is not None
     assert "csv" in converter.converters
     assert "md" in converter.converters
@@ -79,7 +79,7 @@ def test_converter_initialization():
 
 def test_unsupported_format():
     """测试不支持的格式"""
-    converter = XMindConverter()
+    converter = CoreConverter()
     mindmap = MindMap("测试思维导图")
     with pytest.raises(XMindConverterError):
-        converter.convert_to(mindmap, "unsupported")
+        converter.convert_to(mindmap, "unsupported", "output.txt")
