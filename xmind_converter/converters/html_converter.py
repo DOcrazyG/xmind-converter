@@ -1,13 +1,14 @@
 """HTML conversion logic"""
 
 from io import StringIO
-from ..models import MindMap, MindNode
+from ..models import MindMap
+from .base_converter import BaseConverter
 
 
-class HTMLConverter:
+class HTMLConverter(BaseConverter):
     """HTML converter"""
 
-    def convert(self, mindmap):
+    def convert_to(self, mindmap: MindMap) -> str:
         """Convert XMind nodes to HTML format"""
         output = StringIO()
 
@@ -59,7 +60,7 @@ class HTMLConverter:
 
         return output.getvalue()
 
-    def convert_from(self, input_path):
+    def convert_from(self, input_path: str) -> MindMap:
         """Convert from HTML format to XMind nodes"""
         # Simplified implementation here, actually need to use HTML parser
         # For example, use BeautifulSoup to parse HTML structure

@@ -26,7 +26,7 @@ class TestConverters:
     def test_csv_conversion(self, sports_mindmap):
         """Test CSV conversion"""
         converter = CSVConverter()
-        csv_content = converter.convert(sports_mindmap)
+        csv_content = converter.convert_to(sports_mindmap)
 
         assert "parent,child,relationship" in csv_content
         assert "Sports,Ball Sports,contains" in csv_content
@@ -38,7 +38,7 @@ class TestConverters:
     def test_csv_conversion_from_file(self, sports_mindmap):
         """Test CSV conversion matches expected file"""
         converter = CSVConverter()
-        csv_content = converter.convert(sports_mindmap)
+        csv_content = converter.convert_to(sports_mindmap)
 
         csv_file = os.path.join(os.path.dirname(__file__), "..", "data", "sports_v8.csv")
         with open(csv_file, "r", encoding="utf-8") as f:
@@ -66,7 +66,7 @@ class TestConverters:
     def test_md_conversion(self, sports_mindmap):
         """Test Markdown conversion"""
         converter = MarkdownConverter()
-        md_content = converter.convert(sports_mindmap)
+        md_content = converter.convert_to(sports_mindmap)
 
         assert "# Sports" in md_content
         assert "## Ball Sports" in md_content
@@ -81,7 +81,7 @@ class TestConverters:
     def test_md_conversion_from_file(self, sports_mindmap):
         """Test Markdown conversion matches expected file"""
         converter = MarkdownConverter()
-        md_content = converter.convert(sports_mindmap)
+        md_content = converter.convert_to(sports_mindmap)
 
         md_file = os.path.join(os.path.dirname(__file__), "..", "data", "sports_v8.md")
         with open(md_file, "r", encoding="utf-8") as f:
@@ -106,7 +106,7 @@ class TestConverters:
     def test_html_conversion(self, sports_mindmap):
         """Test HTML conversion"""
         converter = HTMLConverter()
-        html_content = converter.convert(sports_mindmap)
+        html_content = converter.convert_to(sports_mindmap)
 
         assert "<!DOCTYPE html>" in html_content
         assert "<title>Sports</title>" in html_content
@@ -123,7 +123,7 @@ class TestConverters:
     def test_html_conversion_from_file(self, sports_mindmap):
         """Test HTML conversion matches expected file"""
         converter = HTMLConverter()
-        html_content = converter.convert(sports_mindmap)
+        html_content = converter.convert_to(sports_mindmap)
 
         html_file = os.path.join(os.path.dirname(__file__), "..", "data", "sports_v8.html")
         with open(html_file, "r", encoding="utf-8") as f:
@@ -134,7 +134,7 @@ class TestConverters:
     def test_json_conversion(self, sports_mindmap):
         """Test JSON conversion"""
         converter = JSONConverter()
-        json_content = converter.convert(sports_mindmap)
+        json_content = converter.convert_to(sports_mindmap)
 
         assert '"name": "Sports"' in json_content
         assert '"title": "Sports"' in json_content
@@ -150,7 +150,7 @@ class TestConverters:
     def test_json_conversion_from_file(self, sports_mindmap):
         """Test JSON conversion matches expected file"""
         converter = JSONConverter()
-        json_content = converter.convert(sports_mindmap)
+        json_content = converter.convert_to(sports_mindmap)
 
         json_file = os.path.join(os.path.dirname(__file__), "..", "data", "sports_v8.json")
         with open(json_file, "r", encoding="utf-8") as f:
@@ -163,7 +163,7 @@ class TestConverters:
         csv_converter = CSVConverter()
 
         # Convert to CSV
-        csv_content = csv_converter.convert(sports_mindmap)
+        csv_content = csv_converter.convert_to(sports_mindmap)
 
         # Write to temp file
         import tempfile
@@ -191,7 +191,7 @@ class TestConverters:
         md_converter = MarkdownConverter()
 
         # Convert to Markdown
-        md_content = md_converter.convert(sports_mindmap)
+        md_content = md_converter.convert_to(sports_mindmap)
 
         # Write to temp file
         import tempfile

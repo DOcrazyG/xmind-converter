@@ -35,7 +35,7 @@ class XMindConverter:
 
         converter = self.converters[format_type]
         try:
-            result = converter.convert(mindmap, **kwargs)
+            result = converter.convert_to(mindmap, **kwargs)
             if output_path:
                 with open(output_path, "w", encoding="utf-8") as f:
                     f.write(result)

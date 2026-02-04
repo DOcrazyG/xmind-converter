@@ -1,14 +1,14 @@
 """JSON conversion logic"""
 
 import json
-from io import StringIO
 from ..models import MindMap, MindNode
+from .base_converter import BaseConverter
 
 
-class JSONConverter:
+class JSONConverter(BaseConverter):
     """JSON converter"""
 
-    def convert(self, mindmap):
+    def convert_to(self, mindmap: MindMap) -> str:
         """Convert XMind nodes to JSON format"""
 
         # Build node dictionary
@@ -27,7 +27,7 @@ class JSONConverter:
 
         return json.dumps(mindmap_dict, ensure_ascii=False, indent=2) + "\n"
 
-    def convert_from(self, input_path):
+    def convert_from(self, input_path: str) -> MindMap:
         """Convert from JSON format to XMind nodes"""
         with open(input_path, "r", encoding="utf-8") as f:
             data = json.load(f)

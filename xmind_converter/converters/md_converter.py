@@ -2,12 +2,13 @@
 
 from io import StringIO
 from ..models import MindMap, MindNode
+from .base_converter import BaseConverter
 
 
-class MarkdownConverter:
+class MarkdownConverter(BaseConverter):
     """Markdown converter"""
 
-    def convert(self, mindmap):
+    def convert_to(self, mindmap: MindMap) -> str:
         """Convert XMind nodes to Markdown format"""
         output = StringIO()
 
@@ -26,7 +27,7 @@ class MarkdownConverter:
 
         return output.getvalue()
 
-    def convert_from(self, input_path):
+    def convert_from(self, input_path: str) -> MindMap:
         """Convert from Markdown format to XMind nodes"""
         with open(input_path, "r", encoding="utf-8") as f:
             lines = f.readlines()

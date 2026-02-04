@@ -2,13 +2,15 @@
 
 import csv
 from io import StringIO
+from typing import Optional
 from ..models import MindMap, MindNode
+from .base_converter import BaseConverter
 
 
-class CSVConverter:
+class CSVConverter(BaseConverter):
     """CSV converter"""
 
-    def convert(self, mindmap, delimiter=","):
+    def convert_to(self, mindmap: MindMap, delimiter: str = ",") -> str:
         """Convert XMind nodes to CSV format (triples)"""
         output = StringIO()
         writer = csv.writer(output, delimiter=delimiter, lineterminator="\n")
@@ -28,7 +30,7 @@ class CSVConverter:
 
         return output.getvalue()
 
-    def convert_from(self, input_path, delimiter=","):
+    def convert_from(self, input_path: str, delimiter: str = ",") -> MindMap:
         """Convert from CSV format to XMind nodes"""
         # Read CSV file
         triples = []
