@@ -1,9 +1,9 @@
-# 核心依赖
+# core dependencies
 click>=8.0.0
 
-# 测试依赖（可选）
+# testing dependencies (optional)
 pytest>=6.0.0
 
-# 开发依赖（可选）
+# development dependencies (optional)
 black>=21.0.0
 flake8>=4.0.0

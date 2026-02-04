@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "xmind-converter"
 version = "0.1.0"
-description = "XMind文件与CSV(三元组)、Markdown、HTML、JSON等文件格式的相互转换"
+description = "XMind Converter is a Python library for converting XMind files to and from CSV (triples), Markdown, HTML, JSON."
 authors = [
   { name = "DOcrazyG", email = "lyuuhao@gmail.com" }
 ]

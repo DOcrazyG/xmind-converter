@@ -6,7 +6,7 @@ XMind Converter is a Python library for converting XMind files to and from CSV (
 
 - Supports XMind file parsing
 - Supports conversion to CSV, Markdown, HTML, JSON formats
-- Supports conversion from CSV, Markdown, JSON formats back to XMind (partial support)
+- Supports conversion from CSV, Markdown, HTML, JSON formats back to XMind
 - Provides command line tool
 - Supports Python 3.7+
 
@@ -21,29 +21,29 @@ pip install xmind-converter
 ### Basic Usage
 
 ```python
-from xmind_converter import XMindConverter
+from xmind_converter import CoreConverter
 
 # Create converter instance
-converter = XMindConverter()
+converter = CoreConverter()
 
 # Load XMind file
-node = converter.load_xmind('example.xmind')
+mindmap = converter.load_from('example.xmind')
 
 # Convert to CSV
-csv_content = converter.convert_to(node, 'csv')
-print(csv_content)
+converter.convert_to(mindmap, 'csv', 'output.csv')
 
 # Convert to Markdown
-md_content = converter.convert_to(node, 'md')
-print(md_content)
+converter.convert_to(mindmap, 'md', 'output.md')
 
 # Convert to HTML
-html_content = converter.convert_to(node, 'html')
-print(html_content)
+converter.convert_to(mindmap, 'html', 'output.html')
 
 # Convert to JSON
-json_content = converter.convert_to(node, 'json')
-print(json_content)
+converter.convert_to(mindmap, 'json', 'output.json')
+
+# Convert between formats
+converter.convert('input.csv', 'output.xmind')
+converter.convert('input.md', 'output.html')
 ```
 
 ### Command Line Usage
@@ -60,4 +60,15 @@ xmind-converter convert example.xmind output.html
 
 # Convert XMind file to JSON
 xmind-converter convert example.xmind output.json
+
+# Convert CSV to XMind
+xmind-converter convert input.csv output.xmind
+
+# Convert between any formats
+xmind-converter convert input.md output.html
 ```
+
+## Documentation
+
+- [API Documentation](api.md) - Detailed API reference
+- [Usage Guide](usage.md) - Comprehensive usage guide

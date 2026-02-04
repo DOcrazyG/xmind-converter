@@ -1,147 +1,169 @@
-# XMind转换器
+# XMind Converter
 
-XMind转换器是一个Python库，用于实现XMind文件与CSV(三元组)、Markdown、HTML、JSON等文件格式的相互转换。
+XMind Converter is a Python library for converting XMind files to and from CSV (triples), Markdown, HTML, JSON.
 
-## 功能特性
+## Features
 
-- 支持XMind文件解析
-- 支持转换为CSV、Markdown、HTML、JSON格式
-- 支持从CSV、Markdown、JSON格式转换回XMind（部分支持）
-- 提供命令行工具
-- 支持Python 3.7+
+- Supports XMind file parsing
+- Supports conversion to CSV, Markdown, HTML, JSON formats
+- Supports conversion from CSV, Markdown, HTML, JSON formats back to XMind
+- Provides command line tool
+- Supports Python 3.7+
 
-## 安装
+## Installation
 
-### 使用pip安装
+### Using pip
 
 ```bash
 pip install xmind-converter
 ```
 
-### 从源码安装
+### Install from source
 
 ```bash
-# 克隆仓库
+# Clone repository
 git clone https://github.com/yourusername/xmind-converter.git
 cd xmind-converter
 
-# 安装依赖
+# Install dependencies
 pip install -r requirements.txt
 
-# 安装包
+# Install package
 pip install -e .
 ```
 
-## 基本使用
+## Basic Usage
 
 ### Python API
 
 ```python
-from xmind_converter import XMindConverter
+from xmind_converter import CoreConverter
 
-# 创建转换器实例
-converter = XMindConverter()
+# Create converter instance
+converter = CoreConverter()
 
-# 加载XMind文件
-node = converter.load_xmind('example.xmind')
+# Load XMind file
+mindmap = converter.load_from('example.xmind')
 
-# 转换为CSV
-csv_content = converter.convert_to(node, 'csv')
-print(csv_content)
+# Convert to CSV
+converter.convert_to(mindmap, 'csv', 'output.csv')
 
-# 转换为Markdown
-md_content = converter.convert_to(node, 'md')
-print(md_content)
+# Convert to Markdown
+converter.convert_to(mindmap, 'md', 'output.md')
 
-# 转换为HTML
-html_content = converter.convert_to(node, 'html')
-print(html_content)
+# Convert to HTML
+converter.convert_to(mindmap, 'html', 'output.html')
 
-# 转换为JSON
-json_content = converter.convert_to(node, 'json')
-print(json_content)
+# Convert to JSON
+converter.convert_to(mindmap, 'json', 'output.json')
 
-# 保存到文件
-converter.convert_to(node, 'csv', 'output.csv')
-converter.convert_to(node, 'md', 'output.md')
-converter.convert_to(node, 'html', 'output.html')
-converter.convert_to(node, 'json', 'output.json')
+# Convert from CSV to XMind
+converter.convert('input.csv', 'output.xmind')
+
+# Convert from Markdown to XMind
+converter.convert('input.md', 'output.xmind')
+
+# Convert from HTML to XMind
+converter.convert('input.html', 'output.xmind')
+
+# Convert from JSON to XMind
+converter.convert('input.json', 'output.xmind')
 ```
 
-### 命令行工具
+### Command Line Tool
 
 ```bash
-# 转换XMind文件到CSV
+# Convert XMind file to CSV
 xmind-converter convert example.xmind output.csv
 
-# 转换XMind文件到Markdown
+# Convert XMind file to Markdown
 xmind-converter convert example.xmind output.md
 
-# 转换XMind文件到HTML
+# Convert XMind file to HTML
 xmind-converter convert example.xmind output.html
 
-# 转换XMind文件到JSON
+# Convert XMind file to JSON
 xmind-converter convert example.xmind output.json
 
-# 从CSV转换到XMind
-xmind-converter reverse input.csv output.xmind
+# Convert CSV to XMind
+xmind-converter convert input.csv output.xmind
 
-# 查看版本信息
+# Convert Markdown to XMind
+xmind-converter convert input.md output.xmind
+
+# Convert HTML to XMind
+xmind-converter convert input.html output.xmind
+
+# Convert JSON to XMind
+xmind-converter convert input.json output.xmind
+
+# Convert between any formats
+xmind-converter convert input.csv output.md
+
+# View version information
 xmind-converter info
 ```
 
-## 项目结构
+## Project Structure
 
 ```
 xmind_converter/
-├── __init__.py          # 包初始化文件
-├── core.py              # 核心数据模型
-├── parsers/             # XMind文件解析模块
+├── __init__.py          # Package initialization
+├── core.py              # Core converter class
+├── models.py            # Data models (MindMap, MindNode)
+├── parsers/             # Parser modules
 │   ├── __init__.py
-│   └── xmind_parser.py  # XMind文件解析器
-├── converters/          # 转换模块
+│   ├── base_parser.py   # Base parser class
+│   ├── xmind_parser.py  # XMind file parser
+│   ├── csv_parser.py    # CSV parser
+│   ├── md_parser.py     # Markdown parser
+│   ├── html_parser.py   # HTML parser
+│   └── json_parser.py   # JSON parser
+├── converters/          # Converter modules
 │   ├── __init__.py
-│   ├── csv_converter.py  # CSV转换逻辑
-│   ├── md_converter.py   # Markdown转换逻辑
-│   ├── html_converter.py # HTML转换逻辑
-│   └── json_converter.py # JSON转换逻辑
-├── utils/               # 工具函数
-│   ├── __init__.py
-│   └── common.py        # 通用工具函数
-├── exceptions.py        # 异常定义
-└── cli.py               # 命令行工具
-tests/                   # 测试代码
-docs/                    # 文档
+│   ├── base_converter.py   # Base converter class
+│   ├── csv_converter.py    # CSV converter
+│   ├── md_converter.py     # Markdown converter
+│   ├── html_converter.py   # HTML converter
+│   ├── json_converter.py   # JSON converter
+│   └── xmind_converter.py  # XMind converter
+├── exceptions.py        # Exception definitions
+└── cli.py               # Command line tool
+tests/                   # Test code
+docs/                    # Documentation
 ```
 
-## 依赖项
+## Dependencies
 
 - Python 3.7+
 - click >= 8.0.0
 
-## 测试
+## Testing
 
 ```bash
-# 运行测试
-python -m pytest tests/
+# Run tests
+pytest tests/
+
+# Run tests with coverage
+pytest tests/ --cov=xmind_converter
 ```
 
-## 贡献
+## Contributing
 
-欢迎贡献代码！请按照以下步骤：
+Contributions are welcome! Please follow these steps:
 
-1. Fork 仓库
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 打开 Pull Request
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## 许可证
+## License
 
-本项目采用MIT许可证 - 详情见 [LICENSE](LICENSE) 文件
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
 
-## 联系方式
+## Contact
 
-- 作者: Your Name
-- 邮箱: your.email@example.com
-- 项目链接: https://github.com/yourusername/xmind-converter
+- Author: DOcrazyG
+- Email: lyuuhao@gmail.com
+- Project Link: https://github.com/DOcrazyG/xmind-converter.git

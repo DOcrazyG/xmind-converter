@@ -1,209 +1,465 @@
-# 使用指南
+# Usage Guide
 
-本指南将详细介绍如何使用XMind转换器库进行文件格式转换。
+This guide provides detailed instructions on how to use the XMind Converter library for file format conversions.
 
-## 1. 安装
+## 1. Installation
 
-### 使用pip安装
+### Using pip
 
 ```bash
 pip install xmind-converter
 ```
 
-### 从源码安装
+### Install from source
 
 ```bash
-# 克隆仓库
+# Clone repository
 git clone https://github.com/yourusername/xmind-converter.git
 cd xmind-converter
 
-# 安装依赖
+# Install dependencies
 pip install -r requirements.txt
 
-# 安装包
+# Install package
 pip install -e .
 ```
 
-## 2. Python API使用
+## 2. Python API Usage
 
-### 2.1 基本转换
+### 2.1 Basic Conversion
 
-#### 从XMind转换到其他格式
-
-```python
-from xmind_converter import XMindConverter
-
-# 创建转换器实例
-converter = XMindConverter()
-
-# 加载XMind文件
-node = converter.load_xmind('example.xmind')
-
-# 转换为CSV（三元组）
-csv_content = converter.convert_to(node, 'csv')
-print(csv_content)
-
-# 转换为Markdown
-md_content = converter.convert_to(node, 'md')
-print(md_content)
-
-# 转换为HTML
-html_content = converter.convert_to(node, 'html')
-print(html_content)
-
-# 转换为JSON
-json_content = converter.convert_to(node, 'json')
-print(json_content)
-```
-
-#### 保存到文件
+#### Converting from XMind to other formats
 
 ```python
-# 转换并保存到文件
-converter.convert_to(node, 'csv', 'output.csv')
-converter.convert_to(node, 'md', 'output.md')
-converter.convert_to(node, 'html', 'output.html')
-converter.convert_to(node, 'json', 'output.json')
+from xmind_converter import CoreConverter
+
+# Create converter instance
+converter = CoreConverter()
+
+# Load XMind file
+mindmap = converter.load_from('example.xmind')
+
+# Convert to CSV (triples)
+converter.convert_to(mindmap, 'csv', 'output.csv')
+
+# Convert to Markdown
+converter.convert_to(mindmap, 'md', 'output.md')
+
+# Convert to HTML
+converter.convert_to(mindmap, 'html', 'output.html')
+
+# Convert to JSON
+converter.convert_to(mindmap, 'json', 'output.json')
 ```
 
-### 2.2 反向转换
-
-#### 从其他格式转换到XMind
+#### Converting from other formats to XMind
 
 ```python
-from xmind_converter import XMindConverter
+from xmind_converter import CoreConverter
 
-# 创建转换器实例
-converter = XMindConverter()
+# Create converter instance
+converter = CoreConverter()
 
-# 从CSV转换
-node_from_csv = converter.convert_from('input.csv', 'csv')
+# Convert from CSV to XMind
+converter.convert('input.csv', 'output.xmind')
 
-# 从Markdown转换
-node_from_md = converter.convert_from('input.md', 'md')
+# Convert from Markdown to XMind
+converter.convert('input.md', 'output.xmind')
 
-# 从JSON转换
-node_from_json = converter.convert_from('input.json', 'json')
+# Convert from HTML to XMind
+converter.convert('input.html', 'output.xmind')
 
-# 注意：HTML反向转换暂未实现
+# Convert from JSON to XMind
+converter.convert('input.json', 'output.xmind')
 ```
 
-## 3. 命令行工具使用
+#### Converting between any formats
 
-### 3.1 基本命令
+```python
+from xmind_converter import CoreConverter
 
-#### 转换XMind文件
+# Create converter instance
+converter = CoreConverter()
+
+# Convert CSV to Markdown
+converter.convert('input.csv', 'output.md')
+
+# Convert Markdown to HTML
+converter.convert('input.md', 'output.html')
+
+# Convert HTML to JSON
+converter.convert('input.html', 'output.json')
+
+# Convert JSON to CSV
+converter.convert('input.json', 'output.csv')
+```
+
+### 2.2 Loading and Converting Separately
+
+#### Load file and convert to multiple formats
+
+```python
+from xmind_converter import CoreConverter
+
+# Create converter instance
+converter = CoreConverter()
+
+# Load XMind file once
+mindmap = converter.load_from('example.xmind')
+
+# Convert to multiple formats
+converter.convert_to(mindmap, 'csv', 'output.csv')
+converter.convert_to(mindmap, 'md', 'output.md')
+converter.convert_to(mindmap, 'html', 'output.html')
+converter.convert_to(mindmap, 'json', 'output.json')
+```
+
+#### Load from different formats
+
+```python
+from xmind_converter import CoreConverter
+
+# Create converter instance
+converter = CoreConverter()
+
+# Load from CSV
+mindmap_from_csv = converter.load_from('input.csv')
+
+# Load from Markdown
+mindmap_from_md = converter.load_from('input.md')
+
+# Load from HTML
+mindmap_from_html = converter.load_from('input.html')
+
+# Load from JSON
+mindmap_from_json = converter.load_from('input.json')
+
+# Load from XMind
+mindmap_from_xmind = converter.load_from('input.xmind')
+```
+
+### 2.3 Specifying Format Explicitly
+
+If the file extension cannot be automatically detected, you can specify the format explicitly:
+
+```python
+from xmind_converter import CoreConverter
+
+# Create converter instance
+converter = CoreConverter()
+
+# Load with explicit format
+mindmap = converter.load_from('input.txt', format_type='csv')
+
+# Convert with explicit format
+converter.convert('input.txt', 'output.txt', input_format='csv', output_format='md')
+```
+
+## 3. Command Line Tool Usage
+
+### 3.1 Basic Commands
+
+#### Convert XMind file
 
 ```bash
-# 基本用法
+# Basic usage
 xmind-converter convert <input.xmind> <output.file>
 
-# 示例：转换为CSV
+# Example: Convert to CSV
 xmind-converter convert example.xmind output.csv
 
-# 示例：转换为Markdown
+# Example: Convert to Markdown
 xmind-converter convert example.xmind output.md
 
-# 示例：转换为HTML
+# Example: Convert to HTML
 xmind-converter convert example.xmind output.html
 
-# 示例：转换为JSON
+# Example: Convert to JSON
 xmind-converter convert example.xmind output.json
 ```
 
-#### 指定格式
-
-如果输出文件名的扩展名不能自动识别格式，可以使用`--format`选项指定：
+#### Convert to XMind
 
 ```bash
-xmind-converter convert example.xmind output.txt --format csv
+# Example: Convert from CSV
+xmind-converter convert input.csv output.xmind
+
+# Example: Convert from Markdown
+xmind-converter convert input.md output.xmind
+
+# Example: Convert from HTML
+xmind-converter convert input.html output.xmind
+
+# Example: Convert from JSON
+xmind-converter convert input.json output.xmind
 ```
 
-#### 反向转换
+#### Convert between any formats
 
 ```bash
-# 基本用法
-xmind-converter reverse <input.file> <output.xmind>
+# CSV to Markdown
+xmind-converter convert input.csv output.md
 
-# 示例：从CSV转换
-xmind-converter reverse input.csv output.xmind
+# Markdown to HTML
+xmind-converter convert input.md output.html
 
-# 示例：从Markdown转换
-xmind-converter reverse input.md output.xmind
+# HTML to JSON
+xmind-converter convert input.html output.json
 
-# 示例：从JSON转换
-xmind-converter reverse input.json output.xmind
+# JSON to CSV
+xmind-converter convert input.json output.csv
 ```
 
-#### 查看版本信息
+### 3.2 Specifying Format Explicitly
+
+If the file extension cannot be automatically recognized, use the `--input-format` and `--output-format` options:
+
+```bash
+xmind-converter convert input.txt output.txt --input-format csv --output-format md
+```
+
+#### Available formats
+
+- `xmind` - XMind file format
+- `csv` - CSV (triples) format
+- `md` - Markdown format
+- `html` - HTML format
+- `json` - JSON format
+
+### 3.3 Viewing Version Information
 
 ```bash
 xmind-converter info
 ```
 
-## 4. 高级功能
+### 3.4 Getting Help
 
-### 4.1 自定义CSV分隔符
+```bash
+# View main help
+xmind-converter --help
 
-```python
-from xmind_converter import XMindConverter
+# View convert command help
+xmind-converter convert --help
 
-converter = XMindConverter()
-node = converter.load_xmind('example.xmind')
-
-# 使用分号作为分隔符
-csv_content = converter.convert_to(node, 'csv', delimiter=';')
-print(csv_content)
+# View info command help
+xmind-converter info --help
 ```
 
-### 4.2 处理节点属性
+## 4. Advanced Features
 
-XMind节点可能包含各种属性，这些属性会在转换时被保留：
+### 4.1 Working with MindMap Objects
+
+#### Accessing MindMap structure
 
 ```python
-from xmind_converter import Node
+from xmind_converter import CoreConverter
 
-# 创建带有属性的节点
-node = Node(
-    "测试节点",
-    attributes={"color": "red", "priority": "high"}
-)
+# Load XMind file
+converter = CoreConverter()
+mindmap = converter.load_from('example.xmind')
 
-# 转换为JSON时会包含属性
-from xmind_converter import XMindConverter
-converter = XMindConverter()
-json_content = converter.convert_to(node, 'json')
-print(json_content)
+# Access mind map name
+print(mindmap.name)
+
+# Access root node
+root = mindmap.root_node
+print(root.title)
+
+# Print tree structure
+mindmap.print_tree()
 ```
 
-## 5. 常见问题
-
-### 5.1 支持的XMind版本
-
-本库支持XMind 8及以上版本的文件格式。
-
-### 5.2 处理大型XMind文件
-
-对于大型XMind文件，解析可能会消耗较多内存。建议在处理大型文件时使用64位Python，并确保有足够的内存。
-
-### 5.3 转换精度
-
-由于不同文件格式的表达能力不同，转换过程中可能会丢失一些信息，例如：
-- CSV格式只能保留父子关系
-- Markdown格式只能保留层级结构和标题
-- HTML格式会添加一些样式信息
-- JSON格式可以保留完整的结构和属性
-
-### 5.4 错误处理
-
-在使用过程中，如果遇到错误，可以捕获`XMindConverterError`异常：
+#### Working with MindNode objects
 
 ```python
-from xmind_converter import XMindConverter, XMindConverterError
+from xmind_converter import CoreConverter
+
+# Load XMind file
+converter = CoreConverter()
+mindmap = converter.load_from('example.xmind')
+
+# Access root node
+root = mindmap.root_node
+
+# Get node depth
+depth = root.get_depth()
+print(f"Root node depth: {depth}")
+
+# Access children
+for child in root.children:
+    print(f"Child: {child.title}")
+    print(f"Child depth: {child.get_depth()}")
+
+# Add new child
+from xmind_converter.models import MindNode
+new_child = MindNode("New Node")
+root.add_child(new_child)
+```
+
+### 4.2 Error Handling
+
+Handle errors gracefully using try-except blocks:
+
+```python
+from xmind_converter import CoreConverter
+from xmind_converter.exceptions import XMindConverterError
 
 try:
-    converter = XMindConverter()
-    node = converter.load_xmind('example.xmind')
+    converter = CoreConverter()
+    mindmap = converter.load_from('example.xmind')
+    converter.convert_to(mindmap, 'csv', 'output.csv')
 except XMindConverterError as e:
-    print(f"错误: {str(e)}")
+    print(f"Error: {str(e)}")
+except Exception as e:
+    print(f"Unexpected error: {str(e)}")
 ```
+
+### 4.3 Batch Processing
+
+Process multiple files in a loop:
+
+```python
+from xmind_converter import CoreConverter
+import os
+
+# Create converter instance
+converter = CoreConverter()
+
+# Process all XMind files in a directory
+input_dir = 'input_xmind'
+output_dir = 'output_csv'
+
+for filename in os.listdir(input_dir):
+    if filename.endswith('.xmind'):
+        input_path = os.path.join(input_dir, filename)
+        output_filename = filename.replace('.xmind', '.csv')
+        output_path = os.path.join(output_dir, output_filename)
+
+        try:
+            converter.convert(input_path, output_path)
+            print(f"Converted: {filename} -> {output_filename}")
+        except Exception as e:
+            print(f"Failed to convert {filename}: {str(e)}")
+```
+
+## 5. Common Questions
+
+### 5.1 Supported XMind Versions
+
+This library supports XMind 8 and above file formats, including:
+- XMind 2024+ (JSON format)
+- XMind 7.5 (XML format)
+- XMind 6 (XML format)
+
+### 5.2 Handling Large XMind Files
+
+For large XMind files, parsing may consume significant memory. Recommendations:
+- Use 64-bit Python
+- Ensure sufficient available memory
+- Consider processing files individually rather than in batches
+
+### 5.3 Conversion Precision
+
+Different file formats have different expressive capabilities, so some information may be lost during conversion:
+- **CSV format**: Only preserves parent-child relationships
+- **Markdown format**: Preserves hierarchy structure and titles
+- **HTML format**: Adds styling information
+- **JSON format**: Preserves complete structure and attributes
+- **XMind format**: Preserves all information
+
+### 5.4 File Format Detection
+
+The library automatically detects file formats based on file extensions:
+- `.xmind` - XMind format
+- `.csv` - CSV format
+- `.md` - Markdown format
+- `.html` - HTML format
+- `.json` - JSON format
+
+If your files use non-standard extensions, specify the format explicitly using the `format_type` parameter or `--input-format`/`--output-format` options.
+
+### 5.5 CSV Format Structure
+
+The CSV format uses a triple structure (parent, child, relationship):
+
+```csv
+parent,child,relationship
+Root,Child1,contains
+Child1,Grandchild1,contains
+Root,Child2,contains
+```
+
+This structure represents the hierarchical relationships in the mind map.
+
+### 5.6 Markdown Format Structure
+
+The Markdown format uses heading levels to represent hierarchy:
+
+```markdown
+# Root
+## Child1
+### Grandchild1
+## Child2
+```
+
+Each heading level represents a depth level in the mind map.
+
+### 5.7 HTML Format Structure
+
+The HTML format generates a nested list structure:
+
+```html
+<ul>
+  <li>Root
+    <ul>
+      <li>Child1
+        <ul>
+          <li>Grandchild1</li>
+        </ul>
+      </li>
+      <li>Child2</li>
+    </ul>
+  </li>
+</ul>
+```
+
+### 5.8 JSON Format Structure
+
+The JSON format preserves the complete tree structure:
+
+```json
+{
+  "name": "MindMap Name",
+  "root_node": {
+    "title": "Root",
+    "id": "root-id",
+    "children": [
+      {
+        "title": "Child1",
+        "id": "child1-id",
+        "children": [
+          {
+            "title": "Grandchild1",
+            "id": "grandchild1-id",
+            "children": []
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+## 6. Best Practices
+
+1. **Always validate input files** before conversion to ensure they are in the expected format
+2. **Use explicit format specification** when working with non-standard file extensions
+3. **Handle errors gracefully** using try-except blocks
+4. **Test conversions** with sample files before processing large batches
+5. **Backup original files** before performing conversions
+6. **Use appropriate formats** for your use case:
+   - CSV for simple parent-child relationships
+   - Markdown for documentation
+   - HTML for web display
+   - JSON for programmatic processing
+   - XMind for full feature support
