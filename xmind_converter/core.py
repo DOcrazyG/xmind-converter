@@ -11,7 +11,7 @@ from .converters.md_converter import MarkdownConverter
 from .converters.html_converter import HTMLConverter
 from .converters.json_converter import JSONConverter
 from .converters.xmind_converter import XMindConverter
-from .exceptions import XMindConverterError
+from .exceptions import ParserError, ConverterError, FileFormatError
 
 
 class CoreConverter:
@@ -37,7 +37,7 @@ class CoreConverter:
         """Load from specified format and convert to MindMap
 
         Args:
-            input_path: Path to the input file
+            input_path: Path to input file
             format_type: Format type (auto-detected from file extension if not provided)
             **kwargs: Additional format-specific parameters
 
@@ -51,16 +51,16 @@ class CoreConverter:
             if ext in self.parsers:
                 format_type = ext
             else:
-                raise XMindConverterError(f"Cannot auto detect format from file extension: {ext}")
+                raise FileFormatError(f"Cannot auto detect format from file extension: {ext}")
 
         if format_type not in self.parsers:
-            raise XMindConverterError(f"Unsupported format: {format_type}")
+            raise FileFormatError(f"Unsupported format: {format_type}")
 
         parser = self.parsers[format_type]
         try:
             return parser.parse(input_path, **kwargs)
         except Exception as e:
-            raise XMindConverterError(f"Failed to load file: {str(e)}")
+            raise ParserError(f"Failed to load file: {str(e)}")
 
     def convert_to(self, mindmap, format_type, output_path, **kwargs):
         """Convert to specified format
@@ -75,20 +75,20 @@ class CoreConverter:
             Success message
         """
         if format_type not in self.converters:
-            raise XMindConverterError(f"Unsupported format: {format_type}")
+            raise FileFormatError(f"Unsupported format: {format_type}")
 
         converter = self.converters[format_type]
         try:
             converter.convert_to(mindmap, output_path, **kwargs)
             return f"Conversion completed, output to: {output_path}"
         except Exception as e:
-            raise XMindConverterError(f"Conversion failed: {str(e)}")
+            raise ConverterError(f"Conversion failed: {str(e)}")
 
     def convert(self, input_path, output_path, input_format=None, output_format=None, **kwargs):
         """Convert from one format to another
 
         Args:
-            input_path: Path to the input file
+            input_path: Path to input file
             output_path: Path to save the output file
             input_format: Input format type (auto-detected from file extension if not provided)
             output_format: Output format type (auto-detected from file extension if not provided)
@@ -104,7 +104,7 @@ class CoreConverter:
             if ext in self.parsers:
                 input_format = ext
             else:
-                raise XMindConverterError(f"Cannot auto detect input format from file extension: {ext}")
+                raise FileFormatError(f"Cannot auto detect input format from file extension: {ext}")
 
         if not output_format:
             import os
@@ -113,7 +113,7 @@ class CoreConverter:
             if ext in self.converters:
                 output_format = ext
             else:
-                raise XMindConverterError(f"Cannot auto detect output format from file extension: {ext}")
+                raise FileFormatError(f"Cannot auto detect output format from file extension: {ext}")
 
         mindmap = self.load_from(input_path, input_format, **kwargs)
         return self.convert_to(mindmap, output_format, output_path, **kwargs)

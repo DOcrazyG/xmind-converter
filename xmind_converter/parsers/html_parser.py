@@ -1,7 +1,9 @@
 """HTML file parser"""
 
+import os
 from html.parser import HTMLParser as StdHTMLParser
 from ..models import MindMap, MindNode
+from ..exceptions import ParserError, FileNotFoundError
 from .base_parser import BaseParser
 
 
@@ -26,16 +28,22 @@ class HTMLParser(BaseParser, StdHTMLParser):
             file_path: Path to the HTML file to parse
 
         Returns:
-            MindMap object created from the HTML file
+            MindMap object created from HTML file
         """
-        with open(file_path, "r", encoding="utf-8") as f:
-            html_content = f.read()
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f"File not found: {file_path}")
 
-        self.reset()
-        self.feed(html_content)
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                html_content = f.read()
 
-        mindmap_name = self.mindmap_name or "From HTML"
-        return MindMap(name=mindmap_name, root_node=self.root_node)
+            self.reset()
+            self.feed(html_content)
+
+            mindmap_name = self.mindmap_name or "From HTML"
+            return MindMap(name=mindmap_name, root_node=self.root_node)
+        except Exception as e:
+            raise ParserError(f"Failed to parse HTML file: {str(e)}")
 
     def handle_starttag(self, tag, attrs):
         if tag == "h1":

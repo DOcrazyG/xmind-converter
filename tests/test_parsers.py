@@ -5,13 +5,13 @@ import os
 import tempfile
 import zipfile
 from xmind_converter.parsers.xmind_parser import XMindParser
-from xmind_converter.exceptions import XMindParserError
+from xmind_converter.exceptions import ParserError
 
 
 def test_parse_nonexistent_file():
     """Test parsing nonexistent file"""
     parser = XMindParser()
-    with pytest.raises(XMindParserError):
+    with pytest.raises(ParserError):
         parser.parse("nonexistent.xmind")
 
 
@@ -24,7 +24,7 @@ def test_parse_invalid_file():
         temp_file = f.name
 
     try:
-        with pytest.raises(XMindParserError):
+        with pytest.raises(ParserError):
             parser.parse(temp_file)
     finally:
         os.unlink(temp_file)
@@ -41,7 +41,7 @@ def test_parse_empty_xmind():
         pass
 
     try:
-        with pytest.raises(XMindParserError):
+        with pytest.raises(ParserError):
             parser.parse(temp_file)
     finally:
         os.unlink(temp_file)

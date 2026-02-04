@@ -6,7 +6,7 @@ import tempfile
 import os
 from typing import Dict, List, Optional, Any
 from ..models import MindMap, MindNode
-from ..exceptions import XMindParserError
+from ..exceptions import ParserError, FileNotFoundError, FileFormatError
 from .base_parser import BaseParser
 
 
@@ -16,10 +16,10 @@ class XMindParser(BaseParser):
     def parse(self, file_path: str) -> MindMap:
         """Parse XMind file"""
         if not os.path.exists(file_path):
-            raise XMindParserError(f"File not found: {file_path}")
+            raise FileNotFoundError(f"File not found: {file_path}")
 
         if not zipfile.is_zipfile(file_path):
-            raise XMindParserError(f"Not a valid XMind file: {file_path}")
+            raise FileFormatError(f"Not a valid XMind file: {file_path}")
 
         try:
             # Extract XMind file
@@ -38,9 +38,9 @@ class XMindParser(BaseParser):
                     return self._parse_content_xml(content_xml_path)
 
                 # If neither file exists, raise exception
-                raise XMindParserError("XMind file missing content.json or content.xml")
+                raise ParserError("XMind file missing content.json or content.xml")
         except Exception as e:
-            raise XMindParserError(f"Failed to parse XMind file: {str(e)}")
+            raise ParserError(f"Failed to parse XMind file: {str(e)}")
 
     def _parse_content_json(self, json_path: str) -> MindMap:
         """Parse content.json file"""
@@ -56,7 +56,7 @@ class XMindParser(BaseParser):
             sheets = data.get("sheets", [])
 
         if not sheets:
-            raise XMindParserError("No mind map found in XMind file")
+            raise ParserError("No mind map found in XMind file")
 
         sheet = sheets[0]
         sheet_name = sheet.get("title", "Untitled")
@@ -64,7 +64,7 @@ class XMindParser(BaseParser):
         # Find root node
         root_topic = sheet.get("rootTopic")
         if root_topic is None:
-            raise XMindParserError("No root node found in XMind file")
+            raise ParserError("No root node found in XMind file")
 
         # Parse root node
         root_node = self._parse_topic_json(root_topic)
@@ -106,7 +106,7 @@ class XMindParser(BaseParser):
         # Find first mind map - try both with and without namespace
         sheet_elem = root.find(".//sheet") or root.find(".//xmap:sheet", ns)
         if sheet_elem is None:
-            raise XMindParserError("No mind map found in XMind file")
+            raise ParserError("No mind map found in XMind file")
 
         # Get mind map name
         sheet_name = sheet_elem.get("title", "Untitled")
@@ -114,7 +114,7 @@ class XMindParser(BaseParser):
         # Find root node - try both with and without namespace
         root_topic_elem = sheet_elem.find(".//topic") or sheet_elem.find(".//xmap:topic", ns)
         if root_topic_elem is None:
-            raise XMindParserError("No root node found in XMind file")
+            raise ParserError("No root node found in XMind file")
 
         # Parse root node
         root_node = self._parse_topic(root_topic_elem, ns)
