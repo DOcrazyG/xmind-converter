@@ -1,4 +1,4 @@
-"""命令行工具测试"""
+"""CLI tests"""
 
 import pytest
 from click.testing import CliRunner
@@ -6,7 +6,7 @@ from xmind_converter.cli import cli
 
 
 def test_cli_info():
-    """测试命令行工具的info命令"""
+    """Test CLI info command"""
     runner = CliRunner()
     result = runner.invoke(cli, ["info"])
     assert result.exit_code == 0
@@ -14,7 +14,7 @@ def test_cli_info():
 
 
 def test_cli_help():
-    """测试命令行工具的帮助信息"""
+    """Test CLI help information"""
     runner = CliRunner()
     result = runner.invoke(cli, ["--help"])
     assert result.exit_code == 0
@@ -22,7 +22,7 @@ def test_cli_help():
 
 
 def test_cli_convert_help():
-    """测试转换命令的帮助信息"""
+    """Test convert command help information"""
     runner = CliRunner()
     result = runner.invoke(cli, ["convert", "--help"])
     assert result.exit_code == 0

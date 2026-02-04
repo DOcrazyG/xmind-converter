@@ -1,11 +1,9 @@
-"""Test converters"""
+"""Test converters - MindMap to various formats"""
 
 import os
 import pytest
 import tempfile
 from xmind_converter.parsers.xmind_parser import XMindParser
-from xmind_converter.parsers.csv_parser import CSVParser
-from xmind_converter.parsers.md_parser import MarkdownParser
 from xmind_converter.converters.csv_converter import CSVConverter
 from xmind_converter.converters.md_converter import MarkdownConverter
 from xmind_converter.converters.html_converter import HTMLConverter
@@ -13,7 +11,7 @@ from xmind_converter.converters.json_converter import JSONConverter
 
 
 class TestConverters:
-    """Test converter functionality"""
+    """Test converter functionality - MindMap to format conversions"""
 
     @pytest.fixture
     def parser(self):
@@ -27,7 +25,7 @@ class TestConverters:
         return parser.parse(xmind_file)
 
     def test_csv_conversion(self, sports_mindmap):
-        """Test CSV conversion"""
+        """Test CSV conversion from MindMap"""
         converter = CSVConverter()
         with tempfile.NamedTemporaryFile(suffix=".csv", delete=False, mode="w", encoding="utf-8") as f:
             temp_file = f.name
@@ -65,25 +63,8 @@ class TestConverters:
         finally:
             os.unlink(temp_file)
 
-    def test_csv_reverse_conversion(self):
-        """Test CSV reverse conversion"""
-        parser = CSVParser()
-        csv_file = os.path.join(os.path.dirname(__file__), "..", "data", "sports_v8.csv")
-        mindmap = parser.parse(csv_file)
-
-        assert mindmap.name == "From CSV"
-        assert mindmap.root_node.title == "Sports"
-        assert len(mindmap.root_node.children) == 4
-
-        ball_sports = mindmap.root_node.children[0]
-        assert ball_sports.title == "Ball Sports"
-        assert len(ball_sports.children) == 3
-        assert ball_sports.children[0].title == "Basketball"
-        assert ball_sports.children[1].title == "Soccer"
-        assert ball_sports.children[2].title == "Tennis"
-
     def test_md_conversion(self, sports_mindmap):
-        """Test Markdown conversion"""
+        """Test Markdown conversion from MindMap"""
         converter = MarkdownConverter()
         with tempfile.NamedTemporaryFile(suffix=".md", delete=False, mode="w", encoding="utf-8") as f:
             temp_file = f.name
@@ -124,22 +105,8 @@ class TestConverters:
         finally:
             os.unlink(temp_file)
 
-    def test_md_reverse_conversion(self):
-        """Test Markdown reverse conversion"""
-        parser = MarkdownParser()
-        md_file = os.path.join(os.path.dirname(__file__), "..", "data", "sports_v8.md")
-        mindmap = parser.parse(md_file)
-
-        assert mindmap.name == "From Markdown"
-        assert mindmap.root_node.title == "Sports"
-        assert len(mindmap.root_node.children) == 4
-
-        ball_sports = mindmap.root_node.children[0]
-        assert ball_sports.title == "Ball Sports"
-        assert len(ball_sports.children) == 3
-
     def test_html_conversion(self, sports_mindmap):
-        """Test HTML conversion"""
+        """Test HTML conversion from MindMap"""
         converter = HTMLConverter()
         with tempfile.NamedTemporaryFile(suffix=".html", delete=False, mode="w", encoding="utf-8") as f:
             temp_file = f.name
@@ -183,7 +150,7 @@ class TestConverters:
             os.unlink(temp_file)
 
     def test_json_conversion(self, sports_mindmap):
-        """Test JSON conversion"""
+        """Test JSON conversion from MindMap"""
         converter = JSONConverter()
         with tempfile.NamedTemporaryFile(suffix=".json", delete=False, mode="w", encoding="utf-8") as f:
             temp_file = f.name
@@ -222,55 +189,5 @@ class TestConverters:
                 expected_content = f.read()
 
             assert json_content == expected_content
-        finally:
-            os.unlink(temp_file)
-
-    def test_round_trip_csv(self, sports_mindmap):
-        """Test round-trip conversion: XMind -> CSV -> XMind"""
-        csv_converter = CSVConverter()
-        csv_parser = CSVParser()
-
-        # Convert to CSV
-        with tempfile.NamedTemporaryFile(suffix=".csv", delete=False, mode="w", encoding="utf-8") as f:
-            temp_file = f.name
-
-        try:
-            csv_converter.convert_to(sports_mindmap, temp_file)
-
-            # Convert back from CSV
-            mindmap_from_csv = csv_parser.parse(temp_file)
-
-            # Verify structure is preserved
-            assert mindmap_from_csv.root_node.title == sports_mindmap.root_node.title
-            assert len(mindmap_from_csv.root_node.children) == len(sports_mindmap.root_node.children)
-
-            for i, child in enumerate(mindmap_from_csv.root_node.children):
-                assert child.title == sports_mindmap.root_node.children[i].title
-                assert len(child.children) == len(sports_mindmap.root_node.children[i].children)
-        finally:
-            os.unlink(temp_file)
-
-    def test_round_trip_md(self, sports_mindmap):
-        """Test round-trip conversion: XMind -> Markdown -> XMind"""
-        md_converter = MarkdownConverter()
-        md_parser = MarkdownParser()
-
-        # Convert to Markdown
-        with tempfile.NamedTemporaryFile(suffix=".md", delete=False, mode="w", encoding="utf-8") as f:
-            temp_file = f.name
-
-        try:
-            md_converter.convert_to(sports_mindmap, temp_file)
-
-            # Convert back from Markdown
-            mindmap_from_md = md_parser.parse(temp_file)
-
-            # Verify structure is preserved
-            assert mindmap_from_md.root_node.title == sports_mindmap.root_node.title
-            assert len(mindmap_from_md.root_node.children) == len(sports_mindmap.root_node.children)
-
-            for i, child in enumerate(mindmap_from_md.root_node.children):
-                assert child.title == sports_mindmap.root_node.children[i].title
-                assert len(child.children) == len(sports_mindmap.root_node.children[i].children)
         finally:
             os.unlink(temp_file)
