@@ -1,6 +1,6 @@
 """Markdown conversion logic"""
 
-from ..models import MindMap, MindNode
+from ..models import MindMap
 from .base_converter import BaseConverter
 
 

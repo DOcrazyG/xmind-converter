@@ -29,22 +29,6 @@ def convert(input_file, output_file, input_format, output_format):
         click.echo(f"Unknown error: {str(e)}")
 
 
-@cli.command("reverse")
-@click.argument("input_file")
-@click.argument("output_file")
-@click.option("--format", "-f", help="Input format, supported: csv, md, html, json")
-def reverse(input_file, output_file, format=None):
-    """Convert from other formats to XMind file (deprecated, use convert command instead)"""
-    try:
-        converter = CoreConverter()
-        result = converter.convert(input_file, output_file, format, "xmind")
-        click.echo(f"Conversion successful: {result}")
-    except XMindConverterError as e:
-        click.echo(f"Error: {str(e)}")
-    except Exception as e:
-        click.echo(f"Unknown error: {str(e)}")
-
-
 @cli.command("info")
 def info():
     """Show version information"""

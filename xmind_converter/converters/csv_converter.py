@@ -1,7 +1,7 @@
 """CSV conversion logic"""
 
 import csv
-from ..models import MindMap, MindNode
+from ..models import MindMap
 from .base_converter import BaseConverter
 
 

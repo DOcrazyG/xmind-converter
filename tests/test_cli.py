@@ -27,11 +27,3 @@ def test_cli_convert_help():
     result = runner.invoke(cli, ["convert", "--help"])
     assert result.exit_code == 0
     assert "Convert between different formats" in result.output
-
-
-def test_cli_reverse_help():
-    """测试反向转换命令的帮助信息"""
-    runner = CliRunner()
-    result = runner.invoke(cli, ["reverse", "--help"])
-    assert result.exit_code == 0
-    assert "Convert from other formats" in result.output

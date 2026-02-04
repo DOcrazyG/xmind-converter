@@ -1,4 +1,4 @@
-"""解析器模块"""
+"""Parser modules"""
 
 from .base_parser import BaseParser
 from .xmind_parser import XMindParser
