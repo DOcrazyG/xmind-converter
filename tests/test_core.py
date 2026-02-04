@@ -4,7 +4,7 @@ import os
 import pytest
 import tempfile
 from xmind_converter.core import CoreConverter
-from xmind_converter.exceptions import ParserError, ConverterError, FileFormatError
+from xmind_converter.exceptions import ParserError, FileFormatError
 
 
 class TestCoreConverter:
