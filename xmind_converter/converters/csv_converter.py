@@ -11,7 +11,7 @@ class CSVConverter:
     def convert(self, mindmap, delimiter=","):
         """Convert XMind nodes to CSV format (triples)"""
         output = StringIO()
-        writer = csv.writer(output, delimiter=delimiter)
+        writer = csv.writer(output, delimiter=delimiter, lineterminator="\n")
 
         # Write header
         writer.writerow(["parent", "child", "relationship"])

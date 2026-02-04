@@ -25,7 +25,7 @@ class JSONConverter:
         if mindmap.root_node:
             mindmap_dict["root_node"] = build_node_dict(mindmap.root_node)
 
-        return json.dumps(mindmap_dict, ensure_ascii=False, indent=2)
+        return json.dumps(mindmap_dict, ensure_ascii=False, indent=2) + "\n"
 
     def convert_from(self, input_path):
         """Convert from JSON format to XMind nodes"""

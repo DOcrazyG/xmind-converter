@@ -1,0 +1,14 @@
+parent,child,relationship
+Sports,Ball Sports,contains
+Ball Sports,Basketball,contains
+Ball Sports,Soccer,contains
+Ball Sports,Tennis,contains
+Sports,Water Sports,contains
+Water Sports,Swimming,contains
+Water Sports,Boating,contains
+Sports,Individual Sports,contains
+Individual Sports,Running,contains
+Individual Sports,Gymnastics,contains
+Sports,Combat Sports,contains
+Combat Sports,Boxing,contains
+Combat Sports,Judo,contains
