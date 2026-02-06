@@ -18,6 +18,8 @@ Initialize converter instance.
 
 **Return Value**: CoreConverter instance
 
+**Type**: `CoreConverter`
+
 #### `load_from(input_path, format_type=None, **kwargs)`
 
 Load from specified format and convert to MindMap.
@@ -28,6 +30,8 @@ Load from specified format and convert to MindMap.
 - `**kwargs`: Additional format-specific parameters
 
 **Return Value**: `MindMap` object representing the parsed content
+
+**Type**: `MindMap`
 
 **Exceptions**:
 - `ParserError`: Raised when loading fails or format is unsupported
@@ -52,6 +56,8 @@ Convert MindMap to specified format and save to file.
 
 **Return Value**: str - Success message
 
+**Type**: `str`
+
 **Exceptions**:
 - `ConverterError`: Raised when conversion fails or format is unsupported
 - `FileFormatError`: Raised when file format is not supported
@@ -75,6 +81,8 @@ Convert from one format to another.
 - `**kwargs`: Additional format-specific parameters
 
 **Return Value**: str - Success message
+
+**Type**: `str`
 
 **Exceptions**:
 - `ParserError`: Raised when loading fails or format is unsupported
@@ -383,6 +391,8 @@ Parse file and return MindMap (abstract method).
 
 **Supported Format**: XMind files (.xmind) are ZIP archives containing either `content.json` (XMind 2024+ format) or `content.xml` (older XMind formats). The parser automatically detects and handles both formats.
 
+**Security**: The parser uses `defusedxml` library when parsing XML-based XMind files to prevent XXE (XML External Entity) attacks. This provides protection against external entity expansion, parameter entity attacks, and external DTD retrieval.
+
 **Format Requirements**:
 - File must be a valid ZIP archive
 - Must contain either `content.json` or `content.xml`
@@ -566,21 +576,31 @@ Parse JSON file.
 
 **Description**: Base exception for XMind converter errors.
 
+**Type**: `Exception`
+
 ### ParserError
 
 **Description**: Exception raised when parsing fails.
+
+**Type**: `XMindConverterError`
 
 ### ConverterError
 
 **Description**: Exception raised when conversion fails.
 
+**Type**: `XMindConverterError`
+
 ### FileFormatError
 
 **Description**: Exception raised when file format is not supported.
 
-### FileNotFoundError
+**Type**: `XMindConverterError`
+
+### FileNotFound
 
 **Description**: Exception raised when file is not found.
+
+**Type**: `XMindConverterError`
 
 ## Command Line Interface
 
@@ -615,3 +635,50 @@ xmind-converter convert input.md output.html
 ```bash
 xmind-converter info
 ```
+
+## Type Hints
+
+The library includes comprehensive type hints throughout the codebase, providing:
+
+- **Better IDE Support**: Most modern IDEs (VS Code, PyCharm, etc.) will provide intelligent autocomplete and type checking
+- **Type Safety**: Use `mypy` to catch type errors before runtime
+- **Documentation**: Type hints serve as inline documentation for function signatures
+- **Refactoring Confidence**: Type hints make code refactoring safer and easier
+
+### Type Checking
+
+```bash
+# Install development dependencies
+uv add --dev .
+
+# Run type checking
+uv run mypy xmind_converter/
+```
+
+### Example Type-Aware Code
+
+```python
+from xmind_converter import CoreConverter, MindMap, MindNode
+
+# IDE will provide type hints and autocomplete
+converter: CoreConverter = CoreConverter()
+mindmap: MindMap = converter.load_from('example.xmind')
+
+# Type hints help catch errors early
+root: MindNode = mindmap.root_node
+children: list[MindNode] = root.children
+```
+
+## Security Features
+
+### XML Security
+
+The library uses `defusedxml` for secure XML parsing when processing XMind files (especially older XML-based formats). This provides protection against:
+
+- **XXE Attacks**: XML External Entity attacks that can lead to information disclosure
+- **Parameter Entity Attacks**: Attacks that exploit XML parameter entities
+- **External DTD Retrieval**: Prevents retrieval of external DTD files
+
+The library automatically uses `defusedxml` when available. If not installed, it falls back to the standard library with a security warning.
+
+**Installation**: `defusedxml >= 0.7.1` is included as a core dependency and will be installed automatically with the package.

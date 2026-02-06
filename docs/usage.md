@@ -486,12 +486,14 @@ Handle errors gracefully using try-except blocks:
 
 ```python
 from xmind_converter import CoreConverter
-from xmind_converter.exceptions import XMindConverterError, ParserError, ConverterError, FileFormatError
+from xmind_converter.exceptions import XMindConverterError, ParserError, ConverterError, FileFormatError, FileNotFound
 
 try:
     converter = CoreConverter()
     mindmap = converter.load_from('example.xmind')
     converter.convert_to(mindmap, 'csv', 'output.csv')
+except FileNotFound as e:
+    print(f"File not found: {str(e)}")
 except ParserError as e:
     print(f"Parsing error: {str(e)}")
 except ConverterError as e:
@@ -663,3 +665,56 @@ The JSON format preserves the complete tree structure:
    - HTML for web display
    - JSON for programmatic processing
    - XMind for full feature support
+
+## 7. Security Considerations
+
+The library includes security enhancements to protect against potential vulnerabilities:
+
+### XML Security
+
+When parsing XMind files (especially older formats using XML), the library uses `defusedxml` to prevent XXE (XML External Entity) attacks. This provides protection against:
+
+- External entity expansion attacks
+- Parameter entity attacks
+- External DTD retrieval
+
+The library will automatically use `defusedxml` when available. If not installed, it will fall back to the standard library with a security warning.
+
+**Installation Recommendation**:
+```bash
+# defusedxml is included as a core dependency
+pip install xmind-converter  # Automatically includes defusedxml
+```
+
+## 8. Type Hints and IDE Support
+
+The library includes comprehensive type hints throughout the codebase, providing:
+
+- **Better IDE autocomplete**: Most IDEs will provide intelligent suggestions
+- **Type checking**: Use `mypy` to catch type errors before runtime
+- **Documentation**: Type hints serve as inline documentation
+- **Refactoring confidence**: Type hints make code refactoring safer
+
+### Using Type Checking
+
+```bash
+# Install development dependencies
+uv add --dev .
+
+# Run type checking
+uv run mypy xmind_converter/
+```
+
+### Example Type-Aware Code
+
+```python
+from xmind_converter import CoreConverter, MindMap, MindNode
+
+# IDE will provide type hints
+converter: CoreConverter = CoreConverter()
+mindmap: MindMap = converter.load_from('example.xmind')
+
+# Type hints help catch errors early
+root: MindNode = mindmap.root_node
+children: list[MindNode] = root.children
+```

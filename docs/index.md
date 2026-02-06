@@ -9,6 +9,9 @@ XMind Converter is a Python library for converting XMind files to and from CSV (
 - Supports conversion from CSV, Markdown, HTML, JSON formats back to XMind
 - Provides command line tool
 - Supports Python 3.7+
+- Full type hints for better IDE support and code quality
+- Secure XML parsing using defusedxml to prevent XXE attacks
+- Comprehensive test coverage (62 tests, all passing)
 
 ## Supported File Formats
 
