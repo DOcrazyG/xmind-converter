@@ -6,7 +6,7 @@ import tempfile
 import os
 from typing import Dict, List, Optional, Any
 from ..models import MindMap, MindNode
-from ..exceptions import ParserError, FileNotFoundError, FileFormatError
+from ..exceptions import ParserError, FileNotFound, FileFormatError
 from .base_parser import BaseParser
 
 
@@ -16,7 +16,7 @@ class XMindParser(BaseParser):
     def parse(self, file_path: str) -> MindMap:
         """Parse XMind file"""
         if not os.path.exists(file_path):
-            raise FileNotFoundError(f"File not found: {file_path}")
+            raise FileNotFound(f"File not found: {file_path}")
 
         if not zipfile.is_zipfile(file_path):
             raise FileFormatError(f"Not a valid XMind file: {file_path}")
@@ -97,7 +97,21 @@ class XMindParser(BaseParser):
 
     def _parse_content_xml(self, xml_path: str) -> MindMap:
         """Parse content.xml file"""
-        tree = ET.parse(xml_path)
+        # Use defusedxml to prevent XXE attacks
+        try:
+            from defusedxml import ElementTree as SafeET
+
+            tree = SafeET.parse(xml_path)
+        except ImportError:
+            # Fallback to standard library with security warnings
+            import warnings
+
+            warnings.warn(
+                "defusedxml not installed, using standard xml.etree.ElementTree. "
+                "For better security, install defusedxml: pip install defusedxml",
+                UserWarning,
+            )
+            tree = ET.parse(xml_path)
         root = tree.getroot()
 
         # Handle XML namespace
