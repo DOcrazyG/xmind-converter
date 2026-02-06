@@ -1,5 +1,6 @@
 """Core parsing and data models"""
 
+from typing import Dict, Optional
 from .models import MindMap, MindNode
 from .parsers.xmind_parser import XMindParser
 from .parsers.csv_parser import CSVParser
@@ -17,15 +18,17 @@ from .exceptions import ParserError, ConverterError, FileFormatError
 class CoreConverter:
     """XMind converter main class"""
 
-    def __init__(self):
-        self.converters = {
+    def __init__(self) -> None:
+        self.converters: Dict[
+            str, CSVConverter | MarkdownConverter | HTMLConverter | JSONConverter | XMindConverter
+        ] = {
             "csv": CSVConverter(),
             "md": MarkdownConverter(),
             "html": HTMLConverter(),
             "json": JSONConverter(),
             "xmind": XMindConverter(),
         }
-        self.parsers = {
+        self.parsers: Dict[str, XMindParser | CSVParser | MarkdownParser | HTMLParser | JSONParser] = {
             "xmind": XMindParser(),
             "csv": CSVParser(),
             "md": MarkdownParser(),
@@ -33,7 +36,7 @@ class CoreConverter:
             "json": JSONParser(),
         }
 
-    def load_from(self, input_path, format_type=None, **kwargs):
+    def load_from(self, input_path: str, format_type: Optional[str] = None, **kwargs) -> MindMap:
         """Load from specified format and convert to MindMap
 
         Args:
@@ -62,7 +65,7 @@ class CoreConverter:
         except Exception as e:
             raise ParserError(f"Failed to load file: {str(e)}")
 
-    def convert_to(self, mindmap, format_type, output_path, **kwargs):
+    def convert_to(self, mindmap: MindMap, format_type: str, output_path: str, **kwargs) -> str:
         """Convert to specified format
 
         Args:
@@ -84,7 +87,14 @@ class CoreConverter:
         except Exception as e:
             raise ConverterError(f"Conversion failed: {str(e)}")
 
-    def convert(self, input_path, output_path, input_format=None, output_format=None, **kwargs):
+    def convert(
+        self,
+        input_path: str,
+        output_path: str,
+        input_format: Optional[str] = None,
+        output_format: Optional[str] = None,
+        **kwargs,
+    ) -> str:
         """Convert from one format to another
 
         Args:

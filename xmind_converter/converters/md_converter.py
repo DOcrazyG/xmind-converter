@@ -1,5 +1,6 @@
 """Markdown conversion logic"""
 
+from typing import Optional
 from ..models import MindMap
 from .base_converter import BaseConverter
 
@@ -11,7 +12,7 @@ class MarkdownConverter(BaseConverter):
         """Convert XMind nodes to Markdown file"""
         with open(output_path, "w", encoding="utf-8") as f:
 
-            def write_node(current_node, level=1):
+            def write_node(current_node, level: int = 1) -> None:
                 # Write current node
                 prefix = "#" * level
                 f.write(f"{prefix} {current_node.title}\n\n")

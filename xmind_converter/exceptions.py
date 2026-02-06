@@ -25,7 +25,7 @@ class FileFormatError(XMindConverterError):
     pass
 
 
-class FileNotFoundError(XMindConverterError):
+class FileNotFound(XMindConverterError):
     """File not found exception"""
 
     pass

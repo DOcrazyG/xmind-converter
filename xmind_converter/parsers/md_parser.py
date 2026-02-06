@@ -1,8 +1,9 @@
 """Markdown file parser"""
 
 import os
+from typing import List, Optional
 from ..models import MindMap, MindNode
-from ..exceptions import ParserError, FileNotFoundError
+from ..exceptions import ParserError, FileNotFound
 from .base_parser import BaseParser
 
 
@@ -19,15 +20,15 @@ class MarkdownParser(BaseParser):
             MindMap object created from Markdown file
         """
         if not os.path.exists(file_path):
-            raise FileNotFoundError(f"File not found: {file_path}")
+            raise FileNotFound(f"File not found: {file_path}")
 
         try:
             with open(file_path, "r", encoding="utf-8") as f:
                 lines = f.readlines()
 
             # Build node tree
-            node_stack = []
-            root_node = None
+            node_stack: List[MindNode] = []
+            root_node: Optional[MindNode] = None
 
             for line in lines:
                 line = line.strip()

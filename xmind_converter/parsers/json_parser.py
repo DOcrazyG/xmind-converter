@@ -2,8 +2,9 @@
 
 import json
 import os
+from typing import Dict, Any, Optional
 from ..models import MindMap, MindNode
-from ..exceptions import ParserError, FileNotFoundError
+from ..exceptions import ParserError, FileNotFound
 from .base_parser import BaseParser
 
 
@@ -20,14 +21,14 @@ class JSONParser(BaseParser):
             MindMap object created from JSON file
         """
         if not os.path.exists(file_path):
-            raise FileNotFoundError(f"File not found: {file_path}")
+            raise FileNotFound(f"File not found: {file_path}")
 
         try:
             with open(file_path, "r", encoding="utf-8") as f:
-                data = json.load(f)
+                data: Dict[str, Any] = json.load(f)
 
             # Build node tree
-            def build_node_from_dict(node_dict):
+            def build_node_from_dict(node_dict: Dict[str, Any]) -> MindNode:
                 node = MindNode(node_dict.get("title", ""), node_id=node_dict.get("id"))
 
                 for child_dict in node_dict.get("children", []):
@@ -37,7 +38,7 @@ class JSONParser(BaseParser):
                 return node
 
             mindmap_name = data.get("name", "From JSON")
-            root_node = None
+            root_node: Optional[MindNode] = None
 
             if "root_node" in data:
                 root_node = build_node_from_dict(data["root_node"])

@@ -17,10 +17,10 @@ class TestXMindParser:
 
     def test_parse_nonexistent_file(self):
         """Test parsing nonexistent file"""
-        from xmind_converter.exceptions import FileNotFoundError
+        from xmind_converter.exceptions import FileNotFound
 
         parser = XMindParser()
-        with pytest.raises(FileNotFoundError):
+        with pytest.raises(FileNotFound):
             parser.parse("nonexistent.xmind")
 
     def test_parse_invalid_file(self):

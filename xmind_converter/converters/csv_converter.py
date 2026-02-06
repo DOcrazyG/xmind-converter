@@ -1,6 +1,7 @@
 """CSV conversion logic"""
 
 import csv
+from typing import Optional
 from ..models import MindMap
 from .base_converter import BaseConverter
 
@@ -17,7 +18,7 @@ class CSVConverter(BaseConverter):
             writer.writerow(["parent", "child", "relationship"])
 
             # Traverse node tree, generate triples
-            def generate_triples(current_node, parent_title=None):
+            def generate_triples(current_node, parent_title: Optional[str] = None) -> None:
                 if parent_title:
                     writer.writerow([parent_title, current_node.title, "contains"])
                 for child in current_node.children:

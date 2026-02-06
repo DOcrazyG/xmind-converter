@@ -1,23 +1,24 @@
 """HTML file parser"""
 
 import os
+from typing import List, Optional
 from html.parser import HTMLParser as StdHTMLParser
 from ..models import MindMap, MindNode
-from ..exceptions import ParserError, FileNotFoundError
+from ..exceptions import ParserError, FileNotFound
 from .base_parser import BaseParser
 
 
 class HTMLParser(BaseParser, StdHTMLParser):
     """HTML file parser - supports h1-hn tag hierarchy"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         BaseParser.__init__(self)
         StdHTMLParser.__init__(self)
-        self.mindmap_name = None
-        self.node_stack = []
-        self.root_node = None
-        self.current_text = ""
-        self.current_level = 0
+        self.mindmap_name: Optional[str] = None
+        self.node_stack: List[MindNode] = []
+        self.root_node: Optional[MindNode] = None
+        self.current_text: str = ""
+        self.current_level: int = 0
 
     def parse(self, file_path: str) -> MindMap:
         """Parse HTML file and return MindMap object
@@ -29,7 +30,7 @@ class HTMLParser(BaseParser, StdHTMLParser):
             MindMap object created from HTML file
         """
         if not os.path.exists(file_path):
-            raise FileNotFoundError(f"File not found: {file_path}")
+            raise FileNotFound(f"File not found: {file_path}")
 
         try:
             with open(file_path, "r", encoding="utf-8") as f:
@@ -43,13 +44,13 @@ class HTMLParser(BaseParser, StdHTMLParser):
         except Exception as e:
             raise ParserError(f"Failed to parse HTML file: {str(e)}")
 
-    def handle_starttag(self, tag, attrs):
+    def handle_starttag(self, tag: str, attrs: List[tuple]) -> None:
         if tag.startswith("h") and len(tag) == 2 and tag[1].isdigit():
             level = int(tag[1])
             self.current_level = level
             self.current_text = ""
 
-    def handle_endtag(self, tag):
+    def handle_endtag(self, tag: str) -> None:
         if tag.startswith("h") and len(tag) == 2 and tag[1].isdigit():
             level = int(tag[1])
             if level == 1:
@@ -60,11 +61,11 @@ class HTMLParser(BaseParser, StdHTMLParser):
                 self._finish_current_node()
             self.current_text = ""
 
-    def handle_data(self, data):
+    def handle_data(self, data: str) -> None:
         if data.strip() and self.current_level > 0:
             self.current_text += data
 
-    def _finish_current_node(self):
+    def _finish_current_node(self) -> None:
         """Finish processing current node and add to tree based on h tag level"""
         node_title = self.current_text.strip()
         if node_title:

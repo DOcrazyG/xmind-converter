@@ -1,5 +1,6 @@
 """HTML conversion logic"""
 
+from typing import Optional
 from ..models import MindMap
 from .base_converter import BaseConverter
 
@@ -30,7 +31,7 @@ class HTMLConverter(BaseConverter):
             f.write("<body>\n")
 
             # Write node tree with h1-hn tags
-            def write_node(current_node, level=1):
+            def write_node(current_node, level: int = 1) -> None:
                 h_tag = f"h{level}"
                 f.write(f"    <{h_tag}>{current_node.title}</{h_tag}>\n")
 

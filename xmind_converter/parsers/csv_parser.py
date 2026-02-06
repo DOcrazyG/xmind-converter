@@ -2,8 +2,9 @@
 
 import csv
 import os
+from typing import List, Tuple, Dict, Optional
 from ..models import MindMap, MindNode
-from ..exceptions import ParserError, FileNotFoundError
+from ..exceptions import ParserError, FileNotFound
 from .base_parser import BaseParser
 
 
@@ -21,10 +22,10 @@ class CSVParser(BaseParser):
             MindMap object created from CSV file
         """
         if not os.path.exists(file_path):
-            raise FileNotFoundError(f"File not found: {file_path}")
+            raise FileNotFound(f"File not found: {file_path}")
 
         try:
-            triples = []
+            triples: List[Tuple[str, str]] = []
             with open(file_path, "r", encoding="utf-8") as f:
                 reader = csv.reader(f, delimiter=delimiter)
                 next(reader)  # Skip header
@@ -33,8 +34,8 @@ class CSVParser(BaseParser):
                         triples.append((row[0], row[1]))
 
             # Build node tree
-            node_map = {}
-            root_node = None
+            node_map: Dict[str, MindNode] = {}
+            root_node: Optional[MindNode] = None
 
             # First create all nodes
             for parent_title, child_title in triples:
