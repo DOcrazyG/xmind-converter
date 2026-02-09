@@ -18,7 +18,7 @@ class TestCoreConverter:
     @pytest.fixture
     def xmind_file(self):
         """Get path to test XMind file"""
-        return os.path.join(os.path.dirname(__file__), "..", "data", "sports_v8.xmind")
+        return os.path.join(os.path.dirname(__file__), "..", "data", "example_v8.xmind")
 
     @pytest.fixture
     def csv_file(self):
@@ -58,37 +58,37 @@ class TestCoreConverter:
         """Test loading XMind file to MindMap"""
         mindmap = converter.load_from(xmind_file)
         assert mindmap is not None
-        assert mindmap.name == "Sports"
-        assert mindmap.root_node.title == "Sports"
-        assert len(mindmap.root_node.children) == 4
+        assert mindmap.title == "Sports Theme"
+        assert mindmap.topic_node.title == "Sports"
+        assert len(mindmap.topic_node.children) == 3
 
     def test_load_from_csv(self, converter, csv_file):
         """Test loading CSV file to MindMap"""
         mindmap = converter.load_from(csv_file)
         assert mindmap is not None
-        assert mindmap.name == "From CSV"
-        assert mindmap.root_node.title == "Sports"
+        assert mindmap.title == "From CSV"
+        assert mindmap.topic_node.title == "Sports"
 
     def test_load_from_markdown(self, converter, md_file):
         """Test loading Markdown file to MindMap"""
         mindmap = converter.load_from(md_file)
         assert mindmap is not None
-        assert mindmap.name == "From Markdown"
-        assert mindmap.root_node.title == "Sports"
+        assert mindmap.title == "From Markdown"
+        assert mindmap.topic_node.title == "Sports"
 
     def test_load_from_json(self, converter, json_file):
         """Test loading JSON file to MindMap"""
         mindmap = converter.load_from(json_file)
         assert mindmap is not None
-        assert mindmap.name == "Sports"
-        assert mindmap.root_node.title == "Sports"
+        assert mindmap.title == "Sports Theme"
+        assert mindmap.topic_node.title == "Sports"
 
     def test_load_from_html(self, converter, html_file):
         """Test loading HTML file to MindMap"""
         mindmap = converter.load_from(html_file)
         assert mindmap is not None
-        assert mindmap.name == "Sports"
-        assert mindmap.root_node.title == "Sports"
+        assert mindmap.title == "Sports Theme"
+        assert mindmap.topic_node.title == "Sports"
 
     def test_load_from_nonexistent_file(self, converter):
         """Test loading nonexistent file raises error"""
@@ -121,7 +121,9 @@ class TestCoreConverter:
             with open(temp_file, "r", encoding="utf-8") as f:
                 content = f.read()
             assert "Sports" in content
-            assert "Ball Sports" in content
+            assert "Running" in content
+            assert "Swimming" in content
+            assert "Basketball" in content
         finally:
             os.unlink(temp_file)
 
@@ -140,7 +142,9 @@ class TestCoreConverter:
             with open(temp_file, "r", encoding="utf-8") as f:
                 content = f.read()
             assert "# Sports" in content
-            assert "## Ball Sports" in content
+            assert "## Running" in content
+            assert "## Swimming" in content
+            assert "## Basketball" in content
         finally:
             os.unlink(temp_file)
 
@@ -177,7 +181,21 @@ class TestCoreConverter:
 
             with open(temp_file, "r", encoding="utf-8") as f:
                 content = f.read()
-            assert '"name": "Sports"' in content
+            assert '"title": "Sports Theme"' in content
+        finally:
+            os.unlink(temp_file)
+
+    def test_convert_to_xmind(self, converter, xmind_file):
+        """Test converting MindMap to XMind"""
+        mindmap = converter.load_from(xmind_file)
+
+        with tempfile.NamedTemporaryFile(suffix=".xmind", delete=False) as f:
+            temp_file = f.name
+
+        try:
+            result = converter.convert_to(mindmap, "xmind", temp_file)
+            assert "Conversion completed" in result
+            assert os.path.exists(temp_file)
         finally:
             os.unlink(temp_file)
 
@@ -254,7 +272,7 @@ class TestCoreConverter:
 
             with open(temp_file, "r", encoding="utf-8") as f:
                 content = f.read()
-            assert '"name": "Sports"' in content
+            assert '"title": "Sports Theme"' in content
         finally:
             os.unlink(temp_file)
 
@@ -360,7 +378,7 @@ class TestCoreConverter:
         """Test auto-detection of input format from file extension"""
         mindmap = converter.load_from(xmind_file)
         assert mindmap is not None
-        assert mindmap.name == "Sports"
+        assert mindmap.title == "Sports Theme"
 
     def test_auto_detect_output_format(self, converter, xmind_file):
         """Test auto-detection of output format from file extension"""
@@ -371,5 +389,45 @@ class TestCoreConverter:
             result = converter.convert(xmind_file, temp_file)
             assert "Conversion completed" in result
             assert os.path.exists(temp_file)
+        finally:
+            os.unlink(temp_file)
+
+    def test_notes_and_labels_preservation_xmind_to_json(self, converter, xmind_file):
+        """Test notes and labels are preserved when converting XMind to JSON"""
+        mindmap = converter.load_from(xmind_file)
+
+        with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
+            temp_file = f.name
+
+        try:
+            converter.convert_to(mindmap, "json", temp_file)
+            mindmap2 = converter.load_from(temp_file)
+
+            assert mindmap.topic_node.notes == mindmap2.topic_node.notes
+            assert mindmap.topic_node.labels == mindmap2.topic_node.labels
+
+            for child1, child2 in zip(mindmap.topic_node.children, mindmap2.topic_node.children):
+                assert child1.notes == child2.notes
+                assert child1.labels == child2.labels
+        finally:
+            os.unlink(temp_file)
+
+    def test_notes_and_labels_preservation_xmind_to_md(self, converter, xmind_file):
+        """Test notes and labels are preserved when converting XMind to Markdown"""
+        mindmap = converter.load_from(xmind_file)
+
+        with tempfile.NamedTemporaryFile(suffix=".md", delete=False) as f:
+            temp_file = f.name
+
+        try:
+            converter.convert_to(mindmap, "md", temp_file)
+            mindmap2 = converter.load_from(temp_file)
+
+            assert mindmap.topic_node.notes == mindmap2.topic_node.notes
+            assert mindmap.topic_node.labels == mindmap2.topic_node.labels
+
+            for child1, child2 in zip(mindmap.topic_node.children, mindmap2.topic_node.children):
+                assert child1.notes == child2.notes
+                assert child1.labels == child2.labels
         finally:
             os.unlink(temp_file)

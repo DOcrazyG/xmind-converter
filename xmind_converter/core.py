@@ -1,7 +1,7 @@
 """Core parsing and data models"""
 
 from typing import Dict, Optional
-from .models import MindMap, MindNode
+from .models import MindMap
 from .parsers.xmind_parser import XMindParser
 from .parsers.csv_parser import CSVParser
 from .parsers.md_parser import MarkdownParser

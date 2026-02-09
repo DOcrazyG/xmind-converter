@@ -94,6 +94,10 @@ class TopicNode(Node):
     def print_tree(self, indent: int = 0, prefix: str = "") -> None:
         """Print node tree structure"""
         print(f"{'  ' * indent}{prefix}{self.title}")
+        if self.notes:
+            print(f"{'  ' * indent}  notes: {self.notes}")
+        if self.labels:
+            print(f"{'  ' * indent}  labels: {self.labels}")
         for i, child in enumerate(self.children):
             is_last = i == len(self.children) - 1
             child_prefix = "└── " if is_last else "├── "
@@ -101,6 +105,10 @@ class TopicNode(Node):
                 child.print_tree(indent + 1, child_prefix)
             else:
                 print(f"{'  ' * (indent + 1)}{child_prefix}{child.title}")
+                if child.notes:
+                    print(f"{'  ' * (indent + 1)}    notes: {child.notes}")
+                if child.labels:
+                    print(f"{'  ' * (indent + 1)}    labels: {child.labels}")
 
 
 class DetachedNode(Node):
