@@ -5,7 +5,7 @@ import zipfile
 import tempfile
 import os
 from typing import Dict, List, Any
-from ..models import MindMap, MindNode
+from ..models import MindMap, Node
 from .base_converter import BaseConverter
 
 
@@ -64,21 +64,36 @@ class XMindConverter(BaseConverter):
         """
         sheets = []
 
-        if mindmap.root_node:
+        if mindmap.topic_node:
             sheet = {
                 "id": self._generate_id(),
-                "title": mindmap.name,
-                "rootTopic": self._build_topic_json(mindmap.root_node, is_root=True),
+                "title": mindmap.title,
+                "rootTopic": self._build_topic_json(mindmap.topic_node, is_root=True),
             }
+
+            if mindmap.detached_nodes:
+                sheet["detachedTopics"] = [self._build_topic_json(node) for node in mindmap.detached_nodes]
+
+            if mindmap.relations:
+                sheet["relationships"] = [
+                    {
+                        "id": rel.id or self._generate_id(),
+                        "end1Id": rel.source_id,
+                        "end2Id": rel.target_id,
+                        "title": rel.title,
+                    }
+                    for rel in mindmap.relations
+                ]
+
             sheets.append(sheet)
 
         return sheets
 
-    def _build_topic_json(self, node: MindNode, is_root: bool = False) -> Dict[str, Any]:
-        """Build topic JSON structure from MindNode
+    def _build_topic_json(self, node: Node, is_root: bool = False) -> Dict[str, Any]:
+        """Build topic JSON structure from Node
 
         Args:
-            node: MindNode object
+            node: Node object
             is_root: Whether this is the root topic
 
         Returns:
@@ -93,6 +108,12 @@ class XMindConverter(BaseConverter):
         if is_root:
             topic["class"] = "topic"
             topic["structureClass"] = "org.xmind.ui.logic.right"
+
+        if node.notes:
+            topic["notes"] = {"plain": {"content": node.notes}}
+
+        if node.labels:
+            topic["labels"] = node.labels
 
         for child in node.children:
             topic["children"]["attached"].append(self._build_topic_json(child))

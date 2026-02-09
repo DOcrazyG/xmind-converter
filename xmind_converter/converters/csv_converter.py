@@ -24,5 +24,5 @@ class CSVConverter(BaseConverter):
                 for child in current_node.children:
                     generate_triples(child, current_node.title)
 
-            if mindmap.root_node:
-                generate_triples(mindmap.root_node)
+            if mindmap.topic_node:
+                generate_triples(mindmap.topic_node)

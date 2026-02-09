@@ -17,7 +17,7 @@ class HTMLConverter(BaseConverter):
             f.write("<head>\n")
             f.write('    <meta charset="UTF-8">\n')
             f.write('    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n')
-            f.write(f"    <title>{mindmap.name}</title>\n")
+            f.write(f"    <title>{mindmap.title}</title>\n")
             f.write("    <style>\n")
             f.write("        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; }\n")
             f.write("        h1 { font-size: 2em; font-weight: bold; }\n")
@@ -39,8 +39,8 @@ class HTMLConverter(BaseConverter):
                     for child in current_node.children:
                         write_node(child, level + 1)
 
-            if mindmap.root_node:
-                write_node(mindmap.root_node)
+            if mindmap.topic_node:
+                write_node(mindmap.topic_node)
 
             # Write HTML footer
             f.write("</body>\n")
