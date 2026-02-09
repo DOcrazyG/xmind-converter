@@ -1,78 +1,85 @@
 {
-  "name": "Sports",
-  "root_node": {
-    "id": "a81aaf27-912e-45dd-ae58-e1afe91a4a62",
+  "title": "Sports Theme",
+  "topic_node": {
+    "id": "6a4g2k4aujbvqofskrpnvmdblo",
     "title": "Sports",
     "children": [
       {
-        "id": "4b645861-be64-472d-8731-0f16695ed994",
-        "title": "Ball Sports",
+        "id": "6802mmk8fu0fisqfuvlp8o970m",
+        "title": "Running",
         "children": [
           {
-            "id": "1f9ac765-89ab-4cf1-830d-f6b07b5e9ea8",
-            "title": "Basketball",
-            "children": []
-          },
-          {
-            "id": "b4c9f7fd-2a1e-4e08-99ab-90ca67f89993",
-            "title": "Soccer",
-            "children": []
-          },
-          {
-            "id": "7a2eb688-ac05-44bf-8b4f-9f43dfa4dfd5",
-            "title": "Tennis",
-            "children": []
+            "id": "7h88mr3oitldb3gvf3hp71pgbd",
+            "title": "Marathon",
+            "children": [],
+            "notes": "Long-distance running race",
+            "labels": [
+              "Challenge"
+            ]
           }
+        ],
+        "notes": "A type of aerobic exercise",
+        "labels": [
+          "Aerobic"
         ]
       },
       {
-        "id": "59aba10d-0b18-4f00-a99a-b7d65ebe838a",
-        "title": "Water Sports",
+        "id": "5qhp8mauhchjsnokqtevu72ula",
+        "title": "Swimming",
         "children": [
           {
-            "id": "ac25a23b-f6d5-418a-80d8-1d18070b42ef",
-            "title": "Swimming",
-            "children": []
-          },
-          {
-            "id": "7721fc30-c594-4ff7-b53c-bad23aaadba7",
-            "title": "Boating",
-            "children": []
+            "id": "1uuj94hi9tnumouoh1g192h6iv",
+            "title": "Freestyle",
+            "children": [],
+            "notes": "Most common swimming stroke",
+            "labels": [
+              "Basic"
+            ]
           }
+        ],
+        "notes": "Full-body exercise",
+        "labels": [
+          "Full-body"
         ]
       },
       {
-        "id": "45a1a912-fefd-4351-beb8-05a4ce646171",
-        "title": "Individual Sports",
+        "id": "5rc0pt60n6o52ispkacqvcpbd7",
+        "title": "Basketball",
         "children": [
           {
-            "id": "82b5a8f3-9f97-442c-b9a0-a9f2e18a83c5",
-            "title": "Running",
-            "children": []
-          },
-          {
-            "id": "45546994-1c06-48f1-bad4-caca3343fb07",
-            "title": "Gymnastics",
-            "children": []
+            "id": "0jjtjfsbhgrrr5eqmf92g33nm1",
+            "title": "NBA",
+            "children": [],
+            "notes": "American professional basketball league",
+            "labels": [
+              "Professional"
+            ]
           }
-        ]
-      },
-      {
-        "id": "22c6c570-41fb-47cb-ba38-f6603dc29451",
-        "title": "Combat Sports",
-        "children": [
-          {
-            "id": "3300b57a-4ec2-4fdb-9037-c19aed1e6a87",
-            "title": "Boxing",
-            "children": []
-          },
-          {
-            "id": "50fc89a5-5901-41e7-9264-50535651ced0",
-            "title": "Judo",
-            "children": []
-          }
+        ],
+        "notes": "Team sport",
+        "labels": [
+          "Team"
         ]
       }
+    ],
+    "notes": "This is a mind map about various sports",
+    "labels": [
+      "Healthy Living"
     ]
-  }
+  },
+  "detached_nodes": [],
+  "relations": [
+    {
+      "id": "2ct1l359r4ufocq3psdn6pgrso",
+      "source_id": "6802mmk8fu0fisqfuvlp8o970m",
+      "target_id": "5qhp8mauhchjsnokqtevu72ula",
+      "title": "Aerobic Exercise"
+    },
+    {
+      "id": "7ouuh4m2352alqeb0ufpmgvsht",
+      "source_id": "5rc0pt60n6o52ispkacqvcpbd7",
+      "target_id": "6a4g2k4aujbvqofskrpnvmdblo",
+      "title": "Team Sport"
+    }
+  ]
 }

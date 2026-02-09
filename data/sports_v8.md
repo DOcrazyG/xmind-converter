@@ -1,28 +1,13 @@
 # Sports
 
-## Ball Sports
+## Running
 
-### Basketball
+### Marathon
 
-### Soccer
+## Swimming
 
-### Tennis
+### Freestyle
 
-## Water Sports
+## Basketball
 
-### Swimming
-
-### Boating
-
-## Individual Sports
-
-### Running
-
-### Gymnastics
-
-## Combat Sports
-
-### Boxing
-
-### Judo
-
+### NBA
