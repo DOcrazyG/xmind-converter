@@ -53,138 +53,68 @@ class TestXMindParser:
         finally:
             os.unlink(temp_file)
 
-    def test_parse_sports_v8_xmind(self):
-        """Test parsing sports_v8.xmind file (XMind 2024+ JSON format)"""
+    def test_parse_example_v8_xmind(self):
+        """Test parsing example_v8.xmind file (XMind 2024+ JSON format)"""
         parser = XMindParser()
 
-        xmind_file = os.path.join(os.path.dirname(__file__), "..", "data", "sports_v8.xmind")
+        xmind_file = os.path.join(os.path.dirname(__file__), "..", "data", "example_v8.xmind")
         mindmap = parser.parse(xmind_file)
 
         assert mindmap is not None
-        assert mindmap.name == "Sports"
-        assert mindmap.root_node is not None
-        assert mindmap.root_node.title == "Sports"
+        assert mindmap.title == "Sports Theme"
+        assert mindmap.topic_node is not None
+        assert mindmap.topic_node.title == "Sports"
 
-        assert len(mindmap.root_node.children) == 4
+        assert len(mindmap.topic_node.children) == 3
 
-        child_titles = [child.title for child in mindmap.root_node.children]
-        assert "Ball Sports" in child_titles
-        assert "Water Sports" in child_titles
-        assert "Individual Sports" in child_titles
-        assert "Combat Sports" in child_titles
+        child_titles = [child.title for child in mindmap.topic_node.children]
+        assert "Running" in child_titles
+        assert "Swimming" in child_titles
+        assert "Basketball" in child_titles
 
-        ball_sports = next(child for child in mindmap.root_node.children if child.title == "Ball Sports")
-        assert len(ball_sports.children) == 3
-        ball_sports_titles = [child.title for child in ball_sports.children]
-        assert "Basketball" in ball_sports_titles
-        assert "Soccer" in ball_sports_titles
-        assert "Tennis" in ball_sports_titles
+        assert len(mindmap.relations) == 2
 
-        water_sports = next(child for child in mindmap.root_node.children if child.title == "Water Sports")
-        assert len(water_sports.children) == 2
-        water_sports_titles = [child.title for child in water_sports.children]
-        assert "Swimming" in water_sports_titles
-        assert "Boating" in water_sports_titles
-
-        individual_sports = next(child for child in mindmap.root_node.children if child.title == "Individual Sports")
-        assert len(individual_sports.children) == 2
-        individual_sports_titles = [child.title for child in individual_sports.children]
-        assert "Running" in individual_sports_titles
-        assert "Gymnastics" in individual_sports_titles
-
-        combat_sports = next(child for child in mindmap.root_node.children if child.title == "Combat Sports")
-        assert len(combat_sports.children) == 2
-        combat_sports_titles = [child.title for child in combat_sports.children]
-        assert "Boxing" in combat_sports_titles
-        assert "Judo" in combat_sports_titles
-
-    def test_parse_sports_v75_xmind(self):
-        """Test parsing sports_v75.xmind file (XMind 7.5 XML format)"""
+    def test_parse_example_v75_xmind(self):
+        """Test parsing example_v7.5.xmind file (XMind 7.5 XML format)"""
         parser = XMindParser()
 
-        xmind_file = os.path.join(os.path.dirname(__file__), "..", "data", "sports_v75.xmind")
+        xmind_file = os.path.join(os.path.dirname(__file__), "..", "data", "example_v7.5.xmind")
         mindmap = parser.parse(xmind_file)
 
         assert mindmap is not None
-        assert mindmap.root_node is not None
-        assert mindmap.root_node.title == "Sports"
+        assert mindmap.title == "Untitled"
+        assert mindmap.topic_node is not None
+        assert mindmap.topic_node.title == "Sports"
 
-        assert len(mindmap.root_node.children) == 4
+        assert len(mindmap.topic_node.children) == 3
 
-        child_titles = [child.title for child in mindmap.root_node.children]
-        assert "Ball Sports" in child_titles
-        assert "Water Sports" in child_titles
-        assert "Individual Sports" in child_titles
-        assert "Combat Sports" in child_titles
+        child_titles = [child.title for child in mindmap.topic_node.children]
+        assert "Running" in child_titles
+        assert "Swimming" in child_titles
+        assert "Basketball" in child_titles
 
-        ball_sports = next(child for child in mindmap.root_node.children if child.title == "Ball Sports")
-        assert len(ball_sports.children) == 3
-        ball_sports_titles = [child.title for child in ball_sports.children]
-        assert "Basketball" in ball_sports_titles
-        assert "Soccer" in ball_sports_titles
-        assert "Tennis" in ball_sports_titles
+        assert len(mindmap.relations) == 5
 
-        water_sports = next(child for child in mindmap.root_node.children if child.title == "Water Sports")
-        assert len(water_sports.children) == 2
-        water_sports_titles = [child.title for child in water_sports.children]
-        assert "Swimming" in water_sports_titles
-        assert "Boating" in water_sports_titles
-
-        individual_sports = next(child for child in mindmap.root_node.children if child.title == "Individual Sports")
-        assert len(individual_sports.children) == 2
-        individual_sports_titles = [child.title for child in individual_sports.children]
-        assert "Running" in individual_sports_titles
-        assert "Gymnastics" in individual_sports_titles
-
-        combat_sports = next(child for child in mindmap.root_node.children if child.title == "Combat Sports")
-        assert len(combat_sports.children) == 2
-        combat_sports_titles = [child.title for child in combat_sports.children]
-        assert "Boxing" in combat_sports_titles
-        assert "Judo" in combat_sports_titles
-
-    def test_parse_sports_v6_xmind(self):
-        """Test parsing sports_v6.xmind file (XMind 6 XML format)"""
+    def test_parse_example_v6_xmind(self):
+        """Test parsing example_v6.xmind file (XMind 6 XML format)"""
         parser = XMindParser()
 
-        xmind_file = os.path.join(os.path.dirname(__file__), "..", "data", "sports_v6.xmind")
+        xmind_file = os.path.join(os.path.dirname(__file__), "..", "data", "example_v6.xmind")
         mindmap = parser.parse(xmind_file)
 
         assert mindmap is not None
-        assert mindmap.root_node is not None
-        assert mindmap.root_node.title == "Sports"
+        assert mindmap.title == "Untitled"
+        assert mindmap.topic_node is not None
+        assert mindmap.topic_node.title == "Sports"
 
-        assert len(mindmap.root_node.children) == 4
+        assert len(mindmap.topic_node.children) == 3
 
-        child_titles = [child.title for child in mindmap.root_node.children]
-        assert "Ball Sports" in child_titles
-        assert "Water Sports" in child_titles
-        assert "Individual Sports" in child_titles
-        assert "Combat Sports" in child_titles
+        child_titles = [child.title for child in mindmap.topic_node.children]
+        assert "Running" in child_titles
+        assert "Swimming" in child_titles
+        assert "Basketball" in child_titles
 
-        ball_sports = next(child for child in mindmap.root_node.children if child.title == "Ball Sports")
-        assert len(ball_sports.children) == 3
-        ball_sports_titles = [child.title for child in ball_sports.children]
-        assert "Basketball" in ball_sports_titles
-        assert "Soccer" in ball_sports_titles
-        assert "Tennis" in ball_sports_titles
-
-        water_sports = next(child for child in mindmap.root_node.children if child.title == "Water Sports")
-        assert len(water_sports.children) == 2
-        water_sports_titles = [child.title for child in water_sports.children]
-        assert "Swimming" in water_sports_titles
-        assert "Boating" in water_sports_titles
-
-        individual_sports = next(child for child in mindmap.root_node.children if child.title == "Individual Sports")
-        assert len(individual_sports.children) == 2
-        individual_sports_titles = [child.title for child in individual_sports.children]
-        assert "Running" in individual_sports_titles
-        assert "Gymnastics" in individual_sports_titles
-
-        combat_sports = next(child for child in mindmap.root_node.children if child.title == "Combat Sports")
-        assert len(combat_sports.children) == 2
-        combat_sports_titles = [child.title for child in combat_sports.children]
-        assert "Boxing" in combat_sports_titles
-        assert "Judo" in combat_sports_titles
+        assert len(mindmap.relations) == 5
 
 
 class TestCSVParser:
@@ -196,11 +126,11 @@ class TestCSVParser:
         csv_file = os.path.join(os.path.dirname(__file__), "..", "data", "sports_v8.csv")
         mindmap = parser.parse(csv_file)
 
-        assert mindmap.name == "From CSV"
-        assert mindmap.root_node.title == "Sports"
-        assert len(mindmap.root_node.children) == 4
+        assert mindmap.title == "From CSV"
+        assert mindmap.topic_node.title == "Sports"
+        assert len(mindmap.topic_node.children) == 4
 
-        ball_sports = mindmap.root_node.children[0]
+        ball_sports = mindmap.topic_node.children[0]
         assert ball_sports.title == "Ball Sports"
         assert len(ball_sports.children) == 3
         assert ball_sports.children[0].title == "Basketball"
@@ -217,11 +147,11 @@ class TestMarkdownParser:
         md_file = os.path.join(os.path.dirname(__file__), "..", "data", "sports_v8.md")
         mindmap = parser.parse(md_file)
 
-        assert mindmap.name == "From Markdown"
-        assert mindmap.root_node.title == "Sports"
-        assert len(mindmap.root_node.children) == 4
+        assert mindmap.title == "From Markdown"
+        assert mindmap.topic_node.title == "Sports"
+        assert len(mindmap.topic_node.children) == 4
 
-        ball_sports = mindmap.root_node.children[0]
+        ball_sports = mindmap.topic_node.children[0]
         assert ball_sports.title == "Ball Sports"
         assert len(ball_sports.children) == 3
 
@@ -235,11 +165,11 @@ class TestJSONParser:
         json_file = os.path.join(os.path.dirname(__file__), "..", "data", "sports_v8.json")
         mindmap = parser.parse(json_file)
 
-        assert mindmap.name == "Sports"
-        assert mindmap.root_node.title == "Sports"
-        assert len(mindmap.root_node.children) == 4
+        assert mindmap.title == "Sports"
+        assert mindmap.topic_node.title == "Sports"
+        assert len(mindmap.topic_node.children) == 4
 
-        ball_sports = mindmap.root_node.children[0]
+        ball_sports = mindmap.topic_node.children[0]
         assert ball_sports.title == "Ball Sports"
         assert len(ball_sports.children) == 3
 
@@ -253,6 +183,6 @@ class TestHTMLParser:
         html_file = os.path.join(os.path.dirname(__file__), "..", "data", "sports_v8.html")
         mindmap = parser.parse(html_file)
 
-        assert mindmap.name == "Sports"
-        assert mindmap.root_node.title == "Sports"
-        assert len(mindmap.root_node.children) == 4
+        assert mindmap.title == "Sports"
+        assert mindmap.topic_node.title == "Sports"
+        assert len(mindmap.topic_node.children) == 4
