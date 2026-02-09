@@ -47,11 +47,31 @@ Markdown files use heading levels to represent hierarchy:
 ### Grandchild3
 ```
 
+**Notes and Labels Support**:
+Markdown files can include notes and labels for each node:
+
+```markdown
+# Root
+- notes: This is a note for the root node
+- labels: [Label1, Label2]
+
+## Child1
+- notes: This is a note for child 1
+- labels: [ChildLabel]
+
+### Grandchild1
+- notes: This is a note for grandchild
+- labels: [GrandchildLabel]
+```
+
 **Requirements**:
 - Must use heading syntax (#, ##, ###, etc.)
 - Empty lines are ignored
 - Heading level determines the node depth in the tree
 - The first H1 heading becomes the root node
+- Notes and labels must follow the heading immediately
+- Notes format: `- notes: <text>`
+- Labels format: `- labels: [label1, label2]`
 
 ### HTML Format
 
@@ -79,56 +99,52 @@ HTML files use heading tags (h1, h2, h3, etc.) to represent hierarchy:
 
 ### JSON Format
 
-JSON files must contain a specific structure with `name` and `root_node` fields:
+JSON files must contain a specific structure with `title` and `topic_node` fields:
 
 **Example JSON file**:
 ```json
 {
-  "name": "My MindMap",
-  "root_node": {
+  "title": "My MindMap",
+  "topic_node": {
     "title": "Root",
     "id": "root-id",
+    "notes": "Optional notes for the root node",
+    "labels": ["Label1", "Label2"],
     "children": [
       {
         "title": "Child1",
         "id": "child1-id",
+        "notes": "Optional notes for child 1",
+        "labels": ["ChildLabel"],
         "children": [
           {
             "title": "Grandchild1",
             "id": "grandchild1-id",
-            "children": []
-          },
-          {
-            "title": "Grandchild2",
-            "id": "grandchild2-id",
-            "children": []
-          }
-        ]
-      },
-      {
-        "title": "Child2",
-        "id": "child2-id",
-        "children": [
-          {
-            "title": "Grandchild3",
-            "id": "grandchild3-id",
+            "notes": "Optional notes for grandchild",
+            "labels": ["GrandchildLabel"],
             "children": []
           }
         ]
       }
     ]
-  }
+  },
+  "detached_nodes": [],
+  "relations": []
 }
 ```
 
 **Requirements**:
-- Must have a `name` field (string) for the mind map name
-- Must have a `root_node` field (object) representing the root node
+- Must have a `title` field (string) for the mind map name
+- Must have a `topic_node` field (object) representing the root node
 - Each node must have:
   - `title` (string): Node title
   - `id` (string, optional): Node ID, auto-generated if not provided
+  - `notes` (string, optional): Notes for the node
+  - `labels` (array, optional): List of labels for the node
   - `children` (array): Array of child node objects
 - `children` array can be empty for leaf nodes
+- `detached_nodes` (array, optional): List of detached nodes not in the main tree
+- `relations` (array, optional): List of relations between nodes
 
 **Legacy format support**: The parser also supports a simplified format where the root object itself is the root node:
 ```json

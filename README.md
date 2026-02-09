@@ -1,17 +1,22 @@
 # XMind Converter
 
+English | [简体中文](README-cn.md)
+
 XMind Converter is a Python library for converting XMind files to and from CSV (triples), Markdown, HTML, JSON.
 
 ## Features
 
-- Supports XMind file parsing
-- Supports conversion to CSV, Markdown, HTML, JSON formats
+- Supports XMind file parsing (XMind 6, 7.5, and 2024+ formats)
+- Supports conversion to CSV, Markdown, HTML, JSON, and XMind formats
 - Supports conversion from CSV, Markdown, HTML, JSON formats back to XMind
 - Provides command line tool
 - Supports Python 3.7+
 - Full type hints for better IDE support and code quality
 - Secure XML parsing using defusedxml to prevent XXE attacks
 - Comprehensive test coverage
+- Support for notes and labels in nodes
+- Support for detached nodes and relations
+- Support for XMind round-trip conversions
 
 ## Supported File Formats
 
@@ -35,6 +40,19 @@ Markdown files use heading levels (#, ##, ###, etc.) to represent hierarchy:
 ## Child2
 ```
 
+**Notes and Labels Support**:
+Markdown files can include notes and labels for each node:
+
+```markdown
+# Root
+- notes: This is a note for the root node
+- labels: [Label1, Label2]
+
+## Child1
+- notes: This is a note for child 1
+- labels: [ChildLabel]
+```
+
 ### HTML Format
 HTML files use heading tags (h1, h2, h3, etc.) to represent hierarchy:
 
@@ -45,19 +63,26 @@ HTML files use heading tags (h1, h2, h3, etc.) to represent hierarchy:
 <h2>Child2</h2>
 ```
 
+**Title Tag Support**:
+The HTML parser extracts the mind map name from the `<title>` tag in the HTML head section.
+
 ### JSON Format
-JSON files must contain a specific structure with name and root_node fields:
+JSON files must contain a specific structure with title and topic_node fields:
 
 ```json
 {
-  "name": "MindMap Name",
-  "root_node": {
+  "title": "MindMap Name",
+  "topic_node": {
     "title": "Root",
     "id": "root-id",
+    "notes": "Optional notes for the node",
+    "labels": ["Label1", "Label2"],
     "children": [
       {
         "title": "Child1",
         "id": "child1-id",
+        "notes": "Optional notes",
+        "labels": ["ChildLabel"],
         "children": [
           {
             "title": "Grandchild1",
@@ -67,11 +92,17 @@ JSON files must contain a specific structure with name and root_node fields:
         ]
       }
     ]
-  }
+  },
+  "detached_nodes": [],
+  "relations": []
 }
 ```
 
-**Note**: Only files following these specific formats can be successfully parsed and converted.
+**Detached Nodes**: Free topic nodes not in the structured tree.
+
+**Relations**: Relationships between nodes with source_id, target_id, and title.
+
+**Note**: The parser also supports a legacy format with `name` and `root_node` fields for backward compatibility.
 
 ## Installation
 
@@ -184,7 +215,7 @@ xmind-converter info
 xmind_converter/
 ├── __init__.py          # Package initialization
 ├── core.py              # Core converter class
-├── models.py            # Data models (MindMap, MindNode)
+├── models.py            # Data models (MindMap, Node)
 ├── parsers/             # Parser modules
 │   ├── __init__.py
 │   ├── base_parser.py   # Base parser class

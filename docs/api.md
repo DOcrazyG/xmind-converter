@@ -101,17 +101,19 @@ result = converter.convert('input.md', 'output.html')
 
 ### MindMap
 
-**Description**: Mind map class representing the entire mind map structure.
+**Description**: Mind map class representing the entire mind map structure with topic node, detached nodes, and relations.
 
 **Methods**:
 
-#### `__init__(name, root_node=None)`
+#### `__init__(title, topic_node=None, detached_nodes=None, relations=None)`
 
 Initialize MindMap instance.
 
 **Parameters**:
-- `name` (str, optional): Mind map name, defaults to "Untitled"
-- `root_node` (MindNode, optional): Root node of the mind map
+- `title` (str, optional): Mind map title, defaults to "Untitled"
+- `topic_node` (TopicNode, optional): Topic node (root node) of the mind map
+- `detached_nodes` (list[DetachedNode], optional): List of detached nodes
+- `relations` (list[Relation], optional): List of relations between nodes
 
 **Return Value**: MindMap instance
 
@@ -154,47 +156,84 @@ Traverse mind map and execute callback for each node.
 
 **Return Value**: None
 
-#### `add_root_node(node)`
+#### `add_detached_node(node)`
 
-Add root node to mind map.
+Add detached node to mind map.
 
 **Parameters**:
-- `node` (MindNode): Root node object
+- `node` (DetachedNode): Detached node object
 
 **Return Value**: None
 
+#### `remove_detached_node(node)`
+
+Remove detached node from mind map.
+
+**Parameters**:
+- `node` (DetachedNode): Detached node object to remove
+
+**Return Value**: None
+
+#### `add_relation(relation)`
+
+Add relation to mind map.
+
+**Parameters**:
+- `relation` (Relation): Relation object
+
+**Return Value**: None
+
+#### `remove_relation(relation)`
+
+Remove relation from mind map.
+
+**Parameters**:
+- `relation` (Relation): Relation object to remove
+
+**Return Value**: None
+
+#### `get_node_by_id(node_id)`
+
+Get node by ID from mind map (searches topic node and detached nodes).
+
+**Parameters**:
+- `node_id` (str): Node ID to search for
+
+**Return Value**: Node or None - Node object if found, None otherwise
+
 #### `print_tree()`
 
-Print mind map tree structure to console.
+Print mind map tree structure to console, including notes and labels.
 
 **Parameters**: None
 
 **Return Value**: None
 
-### MindNode
+### Node
 
-**Description**: Mind map node class, used to represent nodes in mind maps.
+**Description**: Base node class for mind map nodes, representing a generic node with title, children, notes, and labels.
 
 **Methods**:
 
-#### `__init__(title, node_id=None, parent=None, children=None)`
+#### `__init__(title, node_id=None, children=None, notes=None, labels=None)`
 
 Initialize node instance.
 
 **Parameters**:
 - `title` (str): Node title
 - `node_id` (str, optional): Node ID, auto-generated if not provided
-- `parent` (MindNode, optional): Parent node
-- `children` (list, optional): Child node list
+- `children` (list[Node], optional): Child node list
+- `notes` (str, optional): Node notes
+- `labels` (list[str], optional): Node labels
 
-**Return Value**: MindNode instance
+**Return Value**: Node instance
 
 #### `add_child(child)`
 
 Add child node.
 
 **Parameters**:
-- `child` (MindNode): Child node object
+- `child` (Node): Child node object
 
 **Return Value**: None
 
@@ -203,7 +242,25 @@ Add child node.
 Remove child node.
 
 **Parameters**:
-- `child` (MindNode): Child node object to remove
+- `child` (Node): Child node object to remove
+
+**Return Value**: None
+
+#### `add_label(label)`
+
+Add label to node.
+
+**Parameters**:
+- `label` (str): Label to add
+
+**Return Value**: None
+
+#### `remove_label(label)`
+
+Remove label from node.
+
+**Parameters**:
+- `label` (str): Label to remove
 
 **Return Value**: None
 
@@ -233,7 +290,7 @@ Traverse node tree and execute callback for each node.
 
 #### `__str__()`
 
-Get string representation of the node.
+Get string representation of the node, including notes and labels.
 
 **Parameters**: None
 
@@ -241,7 +298,7 @@ Get string representation of the node.
 
 #### `__repr__()`
 
-Get detailed string representation of the node.
+Get detailed string representation of the node, including notes and labels.
 
 **Parameters**: None
 
@@ -249,13 +306,93 @@ Get detailed string representation of the node.
 
 #### `print_tree(indent=0, prefix="")`
 
-Print node tree structure to console.
+Print node tree structure to console, including notes and labels.
 
 **Parameters**:
 - `indent` (int, optional): Indentation level
 - `prefix` (str, optional): Prefix string for display
 
 **Return Value**: None
+
+### TopicNode
+
+**Description**: Topic node class representing the root node of the mind map structure. Inherits from Node.
+
+**Methods**:
+
+#### `__init__(title, node_id=None, children=None, notes=None, labels=None)`
+
+Initialize topic node instance.
+
+**Parameters**:
+- `title` (str): Node title
+- `node_id` (str, optional): Node ID, auto-generated if not provided
+- `children` (list[Node], optional): Child node list
+- `notes` (str, optional): Node notes
+- `labels` (list[str], optional): Node labels
+
+**Return Value**: TopicNode instance
+
+#### `get_depth()`
+
+Get topic node depth (always 0 for root node).
+
+**Parameters**: None
+
+**Return Value**: int - Topic node depth (0)
+
+#### `depth`
+
+Property to get topic node depth (always 0 for root node).
+
+**Return Value**: int - Topic node depth (0)
+
+#### `traverse(callback, depth=0)`
+
+Traverse topic node tree and execute callback for each node.
+
+**Parameters**:
+- `callback` (function): Callback function that receives (node, depth) as parameters
+- `depth` (int, optional): Starting depth level (default: 0)
+
+**Return Value**: None
+
+### DetachedNode
+
+**Description**: Detached node class representing free-standing nodes that are not part of the main topic tree. Inherits from Node.
+
+**Methods**:
+
+#### `__init__(title, node_id=None, children=None, notes=None, labels=None)`
+
+Initialize detached node instance.
+
+**Parameters**:
+- `title` (str): Node title
+- `node_id` (str, optional): Node ID, auto-generated if not provided
+- `children` (list[Node], optional): Child node list
+- `notes` (str, optional): Node notes
+- `labels` (list[str], optional): Node labels
+
+**Return Value**: DetachedNode instance
+
+### Relation
+
+**Description**: Relation class representing relationships between nodes in the mind map.
+
+**Methods**:
+
+#### `__init__(source_id, target_id, relation_id=None, title="Relation")`
+
+Initialize relation instance.
+
+**Parameters**:
+- `source_id` (str): Source node ID
+- `target_id` (str): Target node ID
+- `relation_id` (str, optional): Relation ID, auto-generated if not provided
+- `title` (str, optional): Relation title, defaults to "Relation"
+
+**Return Value**: Relation instance
 
 ## Converter Classes
 
@@ -304,7 +441,7 @@ Convert MindMap to CSV format and save to file.
 
 #### `convert_to(mindmap, output_path, **kwargs)`
 
-Convert MindMap to Markdown format and save to file.
+Convert MindMap to Markdown format and save to file. Includes notes and labels for each node.
 
 **Parameters**:
 - `mindmap` (MindMap): MindMap object to convert
@@ -312,6 +449,19 @@ Convert MindMap to Markdown format and save to file.
 - `**kwargs`: Additional parameters (not currently used)
 
 **Return Value**: None
+
+**Output Format**:
+```markdown
+# Root Title
+- notes: Root notes
+- labels: [label1, label2]
+
+## Child Title
+- notes: Child notes
+- labels: [label3]
+
+### Grandchild Title
+```
 
 ### HTMLConverter
 
@@ -338,7 +488,7 @@ Convert MindMap to HTML format and save to file.
 
 #### `convert_to(mindmap, output_path, **kwargs)`
 
-Convert MindMap to JSON format and save to file.
+Convert MindMap to JSON format and save to file. Includes notes, labels, detached nodes, and relations.
 
 **Parameters**:
 - `mindmap` (MindMap): MindMap object to convert
@@ -346,6 +496,30 @@ Convert MindMap to JSON format and save to file.
 - `**kwargs`: Additional parameters (not currently used)
 
 **Return Value**: None
+
+**Output Format**:
+```json
+{
+  "title": "MindMap Title",
+  "topic_node": {
+    "title": "Root",
+    "id": "root-id",
+    "notes": "Root notes",
+    "labels": ["label1", "label2"],
+    "children": [
+      {
+        "title": "Child1",
+        "id": "child1-id",
+        "notes": "Child notes",
+        "labels": ["label3"],
+        "children": []
+      }
+    ]
+  },
+  "detached_nodes": [],
+  "relations": []
+}
+```
 
 ### XMindConverter
 
@@ -389,7 +563,7 @@ Parse file and return MindMap (abstract method).
 
 **Description**: XMind file parser.
 
-**Supported Format**: XMind files (.xmind) are ZIP archives containing either `content.json` (XMind 2024+ format) or `content.xml` (older XMind formats). The parser automatically detects and handles both formats.
+**Supported Format**: XMind files (.xmind) are ZIP archives containing either `content.json` (XMind 2024+ format) or `content.xml` (older XMind formats). The parser automatically detects and handles both formats, including XMind 6, 7.5, and 2024+ versions.
 
 **Security**: The parser uses `defusedxml` library when parsing XML-based XMind files to prevent XXE (XML External Entity) attacks. This provides protection against external entity expansion, parameter entity attacks, and external DTD retrieval.
 
@@ -451,12 +625,18 @@ Parse CSV file.
 
 **Description**: Markdown file parser.
 
-**Supported Format**: Markdown files must use heading syntax (#, ##, ###, etc.) to represent hierarchy. Heading level determines node depth. Empty lines and other content are ignored.
+**Supported Format**: Markdown files must use heading syntax (#, ##, ###, etc.) to represent hierarchy. Heading level determines node depth. Notes and labels can be added after each node using the format `- notes:XXX` and `- labels:[label1, label2]`.
 
 **Example Markdown format**:
 ```markdown
 # Root
+- notes: Root notes
+- labels: [label1, label2]
+
 ## Child1
+- notes: Child notes
+- labels: [label3]
+
 ### Grandchild1
 ## Child2
 ```
@@ -481,14 +661,21 @@ Parse Markdown file.
 
 **Description**: HTML file parser.
 
-**Supported Format**: HTML files must use heading tags (h1, h2, h3, etc.) to represent hierarchy. Heading level determines node depth. The h1 content becomes the mind map name and root node title. Only heading tags are parsed; other HTML content is ignored.
+**Supported Format**: HTML files must use heading tags (h1, h2, h3, etc.) to represent hierarchy. Heading level determines node depth. The h1 content becomes the mind map title and root node title. The `<title>` tag content is used for the mind map title if present. Only heading tags are parsed; other HTML content is ignored.
 
 **Example HTML format**:
 ```html
-<h1>Root</h1>
-<h2>Child1</h2>
-<h3>Grandchild1</h3>
-<h2>Child2</h2>
+<html>
+<head>
+    <title>MindMap Title</title>
+</head>
+<body>
+    <h1>Root</h1>
+    <h2>Child1</h2>
+    <h3>Grandchild1</h3>
+    <h2>Child2</h2>
+</body>
+</html>
 ```
 
 **Methods**:
@@ -516,18 +703,24 @@ Parse HTML file.
 **Standard format** (recommended):
 ```json
 {
-  "name": "MindMap Name",
-  "root_node": {
+  "title": "MindMap Title",
+  "topic_node": {
     "title": "Root",
     "id": "root-id",
+    "notes": "Root notes",
+    "labels": ["label1", "label2"],
     "children": [
       {
         "title": "Child1",
         "id": "child1-id",
+        "notes": "Child notes",
+        "labels": ["label3"],
         "children": []
       }
     ]
-  }
+  },
+  "detached_nodes": [],
+  "relations": []
 }
 ```
 
@@ -536,10 +729,14 @@ Parse HTML file.
 {
   "title": "Root",
   "id": "root-id",
+  "notes": "Root notes",
+  "labels": ["label1", "label2"],
   "children": [
     {
       "title": "Child1",
       "id": "child1-id",
+      "notes": "Child notes",
+      "labels": ["label3"],
       "children": []
     }
   ]
@@ -547,11 +744,13 @@ Parse HTML file.
 ```
 
 **Requirements**:
-- Standard format: Must have `name` (string) and `root_node` (object) fields
+- Standard format: Must have `title` (string) and `topic_node` (object) fields, optional `detached_nodes` and `relations` fields
 - Legacy format: Root object must have `title` and `children` fields
 - Each node must have:
   - `title` (string): Node title
   - `id` (string, optional): Node ID, auto-generated if not provided
+  - `notes` (string, optional): Node notes
+  - `labels` (array of string, optional): Node labels
   - `children` (array): Array of child node objects
 
 **Methods**:
@@ -658,15 +857,15 @@ uv run mypy xmind_converter/
 ### Example Type-Aware Code
 
 ```python
-from xmind_converter import CoreConverter, MindMap, MindNode
+from xmind_converter import CoreConverter, MindMap, TopicNode
 
 # IDE will provide type hints and autocomplete
 converter: CoreConverter = CoreConverter()
 mindmap: MindMap = converter.load_from('example.xmind')
 
 # Type hints help catch errors early
-root: MindNode = mindmap.root_node
-children: list[MindNode] = root.children
+root: TopicNode = mindmap.topic_node
+children: list[TopicNode] = root.children
 ```
 
 ## Security Features
