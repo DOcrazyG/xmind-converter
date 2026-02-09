@@ -3,7 +3,7 @@
 import os
 from typing import List, Optional
 from html.parser import HTMLParser as StdHTMLParser
-from ..models import MindMap, MindNode
+from ..models import MindMap, TopicNode
 from ..exceptions import ParserError, FileNotFound
 from .base_parser import BaseParser
 
@@ -15,10 +15,12 @@ class HTMLParser(BaseParser, StdHTMLParser):
         BaseParser.__init__(self)
         StdHTMLParser.__init__(self)
         self.mindmap_name: Optional[str] = None
-        self.node_stack: List[MindNode] = []
-        self.root_node: Optional[MindNode] = None
+        self.html_title: Optional[str] = None
+        self.node_stack: List[TopicNode] = []
+        self.root_node: Optional[TopicNode] = None
         self.current_text: str = ""
         self.current_level: int = 0
+        self.in_title_tag: bool = False
 
     def parse(self, file_path: str) -> MindMap:
         """Parse HTML file and return MindMap object
@@ -39,37 +41,46 @@ class HTMLParser(BaseParser, StdHTMLParser):
             self.reset()
             self.feed(html_content)
 
-            mindmap_name = self.mindmap_name or "From HTML"
-            return MindMap(name=mindmap_name, root_node=self.root_node)
+            mindmap_name = self.html_title or self.mindmap_name or "From HTML"
+            return MindMap(title=mindmap_name, topic_node=self.root_node)
         except Exception as e:
             raise ParserError(f"Failed to parse HTML file: {str(e)}")
 
     def handle_starttag(self, tag: str, attrs: List[tuple]) -> None:
-        if tag.startswith("h") and len(tag) == 2 and tag[1].isdigit():
+        if tag == "title":
+            self.in_title_tag = True
+            self.current_text = ""
+        elif tag.startswith("h") and len(tag) == 2 and tag[1].isdigit():
             level = int(tag[1])
             self.current_level = level
             self.current_text = ""
 
     def handle_endtag(self, tag: str) -> None:
-        if tag.startswith("h") and len(tag) == 2 and tag[1].isdigit():
+        if tag == "title":
+            self.in_title_tag = False
+            self.html_title = self.current_text.strip()
+            self.current_text = ""
+        elif tag.startswith("h") and len(tag) == 2 and tag[1].isdigit():
             level = int(tag[1])
             if level == 1:
                 self.mindmap_name = self.current_text.strip()
-                self.root_node = MindNode(self.current_text.strip())
+                self.root_node = TopicNode(self.current_text.strip())
                 self.node_stack = [self.root_node]
             else:
                 self._finish_current_node()
             self.current_text = ""
 
     def handle_data(self, data: str) -> None:
-        if data.strip() and self.current_level > 0:
+        if self.in_title_tag:
+            self.current_text += data
+        elif data.strip() and self.current_level > 0:
             self.current_text += data
 
     def _finish_current_node(self) -> None:
         """Finish processing current node and add to tree based on h tag level"""
         node_title = self.current_text.strip()
         if node_title:
-            new_node = MindNode(node_title)
+            new_node = TopicNode(node_title)
 
             if self.node_stack:
                 while len(self.node_stack) >= self.current_level:

@@ -3,7 +3,7 @@
 import csv
 import os
 from typing import List, Tuple, Dict, Optional
-from ..models import MindMap, MindNode
+from ..models import MindMap, TopicNode
 from ..exceptions import ParserError, FileNotFound
 from .base_parser import BaseParser
 
@@ -34,15 +34,15 @@ class CSVParser(BaseParser):
                         triples.append((row[0], row[1]))
 
             # Build node tree
-            node_map: Dict[str, MindNode] = {}
-            root_node: Optional[MindNode] = None
+            node_map: Dict[str, TopicNode] = {}
+            root_node: Optional[TopicNode] = None
 
             # First create all nodes
             for parent_title, child_title in triples:
                 if parent_title not in node_map:
-                    node_map[parent_title] = MindNode(parent_title)
+                    node_map[parent_title] = TopicNode(parent_title)
                 if child_title not in node_map:
-                    node_map[child_title] = MindNode(child_title)
+                    node_map[child_title] = TopicNode(child_title)
 
             # Then establish parent-child relationships
             for parent_title, child_title in triples:
@@ -55,7 +55,7 @@ class CSVParser(BaseParser):
                     root_node = parent_node
 
             # Create and return MindMap object
-            mindmap = MindMap(name="From CSV", root_node=root_node)
+            mindmap = MindMap(title="From CSV", topic_node=root_node)
             return mindmap
         except Exception as e:
             raise ParserError(f"Failed to parse CSV file: {str(e)}")

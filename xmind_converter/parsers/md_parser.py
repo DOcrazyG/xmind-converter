@@ -2,7 +2,7 @@
 
 import os
 from typing import List, Optional
-from ..models import MindMap, MindNode
+from ..models import MindMap, TopicNode
 from ..exceptions import ParserError, FileNotFound
 from .base_parser import BaseParser
 
@@ -27,12 +27,14 @@ class MarkdownParser(BaseParser):
                 lines = f.readlines()
 
             # Build node tree
-            node_stack: List[MindNode] = []
-            root_node: Optional[MindNode] = None
+            node_stack: List[TopicNode] = []
+            root_node: Optional[TopicNode] = None
+            i = 0
 
-            for line in lines:
-                line = line.strip()
+            while i < len(lines):
+                line = lines[i].strip()
                 if not line:
+                    i += 1
                     continue
 
                 # Check if it's a header line
@@ -44,7 +46,28 @@ class MarkdownParser(BaseParser):
                         line = line[1:].strip()
 
                     # Create new node
-                    new_node = MindNode(line)
+                    new_node = TopicNode(line)
+
+                    # Check for notes and labels in following lines
+                    j = i + 1
+                    while j < len(lines):
+                        next_line = lines[j].strip()
+                        if next_line.startswith("- notes:"):
+                            notes = next_line[len("- notes:") :].strip()
+                            new_node.notes = notes
+                            j += 1
+                        elif next_line.startswith("- labels:"):
+                            labels_str = next_line[len("- labels:") :].strip()
+                            # Parse labels from format [label1, label2]
+                            if labels_str.startswith("[") and labels_str.endswith("]"):
+                                labels_str = labels_str[1:-1]
+                                labels = [label.strip() for label in labels_str.split(",") if label.strip()]
+                                new_node.labels = labels
+                            j += 1
+                        elif next_line.startswith("#") or not next_line:
+                            break
+                        else:
+                            j += 1
 
                     # Handle node relationships
                     while node_stack and len(node_stack) >= level:
@@ -61,8 +84,12 @@ class MarkdownParser(BaseParser):
                     # Add new node to stack
                     node_stack.append(new_node)
 
+                    i = j
+                else:
+                    i += 1
+
             # Create and return MindMap object
-            mindmap = MindMap(name="From Markdown", root_node=root_node)
+            mindmap = MindMap(title="From Markdown", topic_node=root_node)
             return mindmap
         except Exception as e:
             raise ParserError(f"Failed to parse Markdown file: {str(e)}")
